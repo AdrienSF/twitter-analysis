@@ -1,0 +1,19 @@
+Validation_Set,Topics,Alpha,Beta,Coherence
+75% bow_corpus,2,symmetric,0.91,-3.8833791138090916
+75% bow_corpus,3,symmetric,0.91,-4.587458144333495
+75% bow_corpus,4,symmetric,0.91,-4.626398162100228
+75% bow_corpus,5,symmetric,0.91,-5.335057795076228
+75% bow_corpus,6,symmetric,0.91,-5.39441009530164
+75% bow_corpus,7,symmetric,0.91,-6.036889652620724
+75% bow_corpus,8,symmetric,0.91,-6.595148292806488
+75% bow_corpus,9,symmetric,0.91,-6.470005752313004
+75% bow_corpus,10,symmetric,0.91,-6.698357660530452
+100% bow_corpus,2,symmetric,0.91,-3.497051395940031
+100% bow_corpus,3,symmetric,0.91,-4.0181503154707565
+100% bow_corpus,4,symmetric,0.91,-4.8499015830949865
+100% bow_corpus,5,symmetric,0.91,-4.961899621535041
+100% bow_corpus,6,symmetric,0.91,-4.917653962097381
+100% bow_corpus,7,symmetric,0.91,-5.227431855465658
+100% bow_corpus,8,symmetric,0.91,-6.247531448151764
+100% bow_corpus,9,symmetric,0.91,-5.470496308812924
+100% bow_corpus,10,symmetric,0.91,-6.1916536868342025
