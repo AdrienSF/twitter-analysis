@@ -5,34 +5,21 @@ from gensim.models import CoherenceModel
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 
 
-def load_tweets(filenames, full_text_only=True):
+def load_tweets(filenames, full_text_only=False):
     all_tweets = []
     for filename in filenames:
-        # print(filename)
         with open(filename, 'r') as f:
+            # add commas between tweets to correct json syntax
             data = json.loads('['+f.read().replace('}{','},{')+']')
         # remove retweets
         tweets = [tweet for tweet in data if 'retweeted_status' not in tweet]
         # keep english language tweets only
         tweets = [tweet for tweet in tweets if tweet['lang'] == 'en']
 
-        # print(tweets[1])
+        # take tweet text  or full_text if the tweet has that attribute
+        ttexts = [ tweet['extended_tweet']['full_text'] if 'full_text' in tweet else tweet['text'] for tweet in tweets]
 
-        # seperate out just tweet text for simplicity
-        # for tweet in tweets:
-        #     print('full_text' in tweet)
-        if full_text_only:
-            ttexts = [ tweet['full_text'] for tweet in tweets if 'full_text' in tweet ]
-        else:
-            ttexts = [ tweet['full_text'] if 'full_text' in tweet else tweet['text'] for tweet in tweets]
 
-        # (probably unecessary) keep an id map: tweet text index --> tweet id
-        # id_map = {i: tweets[i]['id'] for i in range(len(tweets))}
-        # for i in range(len(ttexts)):
-        #     print(('full_text' in tweets[i]), ttexts[i])
-
-        # remove numbers
-        # ttexts = [re.sub('[0-9]+', '', tweet) for tweet in ttexts]
         all_tweets = all_tweets + ttexts
 
 
