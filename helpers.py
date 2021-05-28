@@ -5,27 +5,6 @@ from gensim.models import CoherenceModel
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 
 
-def load_tweets(filenames, full_text_only=False):
-    all_tweets = []
-    for filename in filenames:
-        with open(filename, 'r') as f:
-            # add commas between tweets to correct json syntax
-            data = json.loads('['+f.read().replace('}{','},{')+']')
-        # remove retweets
-        tweets = [tweet for tweet in data if 'retweeted_status' not in tweet]
-        # keep english language tweets only
-        tweets = [tweet for tweet in tweets if tweet['lang'] == 'en']
-
-        # take tweet text  or full_text if the tweet has that attribute
-        ttexts = [ tweet['extended_tweet']['full_text'] if 'full_text' in tweet else tweet['text'] for tweet in tweets]
-
-
-        all_tweets = all_tweets + ttexts
-
-
-    return all_tweets
-
-
 
 def compute_coherence_values(corpus, dictionary, k, a='symmetric', b=None, coherence='u_mass', texts=None):
     
@@ -60,3 +39,24 @@ def preprocess(text):
         if token not in gensim.parsing.preprocessing.STOPWORDS and len(token) > 3:
             result.append(lemmatize_stemming(token))
     return result
+
+
+def load_tweets(filenames, preprocess=True):
+    all_tweets = []
+    for filename in filenames:
+        with open(filename, 'r') as f:
+            # add commas between tweets to correct json syntax
+            data = json.loads('['+f.read().replace('}{','},{')+']')
+        # remove retweets
+        tweets = [tweet for tweet in data if 'retweeted_status' not in tweet]
+        # keep english language tweets only
+        tweets = [tweet for tweet in tweets if tweet['lang'] == 'en']
+
+        # take tweet text  or full_text if the tweet has that attribute
+        ttexts = [ preprocess(tweet['extended_tweet']['full_text']) if 'full_text' in tweet else preprocess(tweet['text']) for tweet in tweets]
+
+
+        all_tweets = all_tweets + ttexts
+
+
+    return all_tweets
