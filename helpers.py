@@ -3,6 +3,8 @@ import os
 import gensim
 from gensim.models import CoherenceModel
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
+import nltk
+# nltk.download('wordnet')
 
 
 
@@ -33,7 +35,7 @@ def compute_coherence_values(corpus, dictionary, k, a='symmetric', b=None, coher
 def lemmatize_stemming(text):
     return SnowballStemmer('english').stem(WordNetLemmatizer().lemmatize(text, pos='v'))
 
-def preprocess(text):
+def get_preprocessed(text):
     result = []
     for token in gensim.utils.simple_preprocess(text):
         if token not in gensim.parsing.preprocessing.STOPWORDS and len(token) > 3:
@@ -41,7 +43,7 @@ def preprocess(text):
     return result
 
 
-def load_tweets(filenames, preprocess=True):
+def load_tweets(filenames, preprocess=False):
     all_tweets = []
     for filename in filenames:
         with open(filename, 'r') as f:
@@ -53,7 +55,10 @@ def load_tweets(filenames, preprocess=True):
         tweets = [tweet for tweet in tweets if tweet['lang'] == 'en']
 
         # take tweet text  or full_text if the tweet has that attribute
-        ttexts = [ preprocess(tweet['extended_tweet']['full_text']) if 'full_text' in tweet else preprocess(tweet['text']) for tweet in tweets]
+        if preprocess:
+            ttexts = [ get_preprocessed(tweet['extended_tweet']['full_text']) if 'full_text' in tweet else get_preprocessed(tweet['text']) for tweet in tweets]
+        else:
+            ttexts = [ tweet['extended_tweet']['full_text'] if 'full_text' in tweet else tweet['text'] for tweet in tweets]
 
 
         all_tweets = all_tweets + ttexts
