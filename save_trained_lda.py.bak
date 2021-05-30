@@ -1,0 +1,137 @@
+import os
+import json
+import random
+import pandas as pd
+import numpy as np
+from datetime import date
+import gensim
+from helpers import lemmatize_stemming, get_preprocessed, compute_coherence_values, load_tweets
+from nltk.stem import WordNetLemmatizer, SnowballStemmer
+import nltk
+nltk.download('wordnet')
+
+filenames = os.listdir('data/unzipped')
+filenames = [ 'data/unzipped/'+filename for filename in filenames ]
+
+filenames = [filenames[0]]
+
+save_dirname = 'trained-' + str(date.today())
+
+
+
+
+# make a corpus object that yields data from file instead of loading the whole file.
+# to what extent i this possible?
+# yield tokenized tweet to dictionary,
+
+class TweetLoader:
+
+    """Iterator that loades, and filters tweets (english non-retweets only)"""
+
+    def __init__(self, filename):
+        with open(filename, 'r') as f:
+                # add commas between tweets to correct json syntax
+            self.tweet_list = json.loads('['+f.read().replace('}{','},{')+']')
+
+        self.tweets = iter(self.tweet_list)
+
+    def __iter__(self):
+        # reset iterator to start
+        self.tweets = iter(self.tweet_list)
+
+        return self
+
+    def __next__(self):
+        try:
+            tweet = next(self.tweets)
+        except StopIteration as e:
+            raise e
+
+        if 'retweeted_status' not in tweet and tweet['lang'] == 'en':
+            return tweet
+        else:
+            return next(self)
+
+
+class LazyTokenCorpus:
+
+    """Iterator that loades, preprocesses and tokenizes tweets (lazily)"""
+
+    def __init__(self, filenames: list):
+        self.filename_list = filenames
+        self.filenames = iter(filenames)
+        self.current_file = next(self.filenames)
+        self.token_loader = TweetLoader(self.current_file)
+
+        self.stemmer = SnowballStemmer('english')
+        self.lemmatizer = WordNetLemmatizer()
+
+    def __iter__(self):
+        # reset iterator to start
+        self.filenames = iter(self.filename_list)
+        self.token_loader = iter(self.token_loader)
+
+        return self
+
+    def __next__(self):
+        tweet = next(self.token_loader, None)
+        if tweet:
+            text = tweet['extended_tweet']['full_text'] if 'full_text' in tweet else tweet['text']
+            return get_preprocessed(text, self.stemmer, self.lemmatizer)
+        else:
+            try:
+                self.current_file = next(self.filenames)
+            except StopIteration as e:
+                raise e
+
+            self.token_loader = TweetLoader(self.current_file)
+            return next(self)
+
+
+dictionary = gensim.corpora.Dictionary(LazyTokenCorpus(filenames))
+if not os.path.isdir(save_dirname):
+    os.makedirs(save_dirname)
+dictionary.save(save_dirname + '/dictionary')
+
+# 
+#  yield dictionary.doc2bow(tokenized tweet) to TfidfModel,
+class LazyBowCorpus:
+    def __init__(self, dictionary, lazy_token_corpus):
+        self.lazy_token_corpus = lazy_token_corpus
+        self.dictionary = dictionary
+
+    def __iter__(self):
+        # reset iterator to start
+        self.lazy_token_corpus = iter(self.lazy_token_corpus)
+
+        return self
+
+    def __next__(self):
+        return self.dictionary.doc2bow(next(self.lazy_token_corpus))
+
+tfidf = gensim.models.TfidfModel(LazyBowCorpus(dictionary, LazyTokenCorpus(filenames)))
+tfidf.save(save_dirname + '/tfidf')
+
+
+#  yield tfidfModel[ictionary.doc2bow(tokenized tweet)]
+class LazyTfidfCorpus:
+    def __init__(self, tfidf_model, lazy_bow_corpus):
+        self.tfidf = tfidf_model
+        self.lazy_bow_corpus = lazy_bow_corpus
+
+    def __iter__(self):
+        # reset iterator to start
+        self.lazy_bow_corpus = iter(self.lazy_bow_corpus)
+
+        return self
+
+    def __next__(self):
+        return self.tfidf[next(self.lazy_bow_corpus)]
+
+
+lda_model = gensim.models.LdaMulticore(LazyTfidfCorpus(tfidf, LazyBowCorpus(dictionary, LazyTokenCorpus(filenames))), num_topics=14, id2word=dictionary, passes=10, workers=4, alpha=0.01, eta=.91)
+
+lda_model.save(save_dirname + '/trained_lda')
+
+# does this mean I need to load each tweet 3 times!?
+# remember to save the tf-idf model

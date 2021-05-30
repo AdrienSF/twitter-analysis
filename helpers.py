@@ -44,9 +44,7 @@ def get_preprocessed(text, stemmer, lemmatizer):
     return result
 
 
-def load_tweets(filenames, preprocess=False):
-    stemmer = SnowballStemmer('english')
-    lemmatizer = WordNetLemmatizer()
+def load_tweets(filenames):
 
     all_tweets = []
     for filename in filenames:
@@ -59,13 +57,16 @@ def load_tweets(filenames, preprocess=False):
         tweets = [tweet for tweet in tweets if tweet['lang'] == 'en']
 
         # take tweet text  or full_text if the tweet has that attribute
-        if preprocess:
-            ttexts = [ get_preprocessed(tweet['extended_tweet']['full_text'], stemmer, lemmatizer) if 'full_text' in tweet else get_preprocessed(tweet['text'], stemmer, lemmatizer) for tweet in tweets]
-        else:
-            ttexts = [ tweet['extended_tweet']['full_text'] if 'full_text' in tweet else tweet['text'] for tweet in tweets]
+        ttexts = []
+        for tweet in tweets:
+            if 'full_text' in tweet:
+                ttexts.append(tweet['full_text'])
+            elif 'extended_tweet' in tweet and 'full_text' in tweet['extended_tweet']:
+                ttexts.append(tweet['extended_tweet']['full_text'])
+            else:
+                ttexts.append(tweet['text'])
 
-
-        all_tweets = all_tweets + ttexts
+        all_tweets = all_tweets + tweets
 
 
     return all_tweets
