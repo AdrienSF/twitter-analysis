@@ -1,8 +1,8 @@
+import sys
 print('sanity check', file=sys.stderr)
 import os
 import json
 import random
-import sys
 from datetime import date
 import gensim
 from helpers import lemmatize_stemming, get_preprocessed, compute_coherence_values, load_tweets
