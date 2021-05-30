@@ -88,7 +88,7 @@ class TfidfCorpus:
             yield self.tfidf[doc]
 
 print('building lda model')
-lda_model = gensim.models.LdaMulticore(TfidfCorpus(tfidf, BowCorpus(dictionary, tweet_loader)), num_topics=14, id2word=dictionary, passes=5, workers=12, alpha=0.01, eta=.91)
+lda_model = gensim.models.LdaMulticore(TfidfCorpus(tfidf, BowCorpus(dictionary, tweet_loader)), num_topics=14, id2word=dictionary, passes=5, workers=8, alpha=0.01, eta=.91)
 lda_model.save(save_dirname + '/trained_lda')
 print('saved')
 
