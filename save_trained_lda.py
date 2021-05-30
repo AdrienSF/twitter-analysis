@@ -2,7 +2,6 @@ import os
 import json
 import random
 import sys
-import pandas as pd
 import numpy as np
 from datetime import date
 import gensim
