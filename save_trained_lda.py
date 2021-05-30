@@ -1,7 +1,9 @@
-import sys
-print('sanity check', file=sys.stderr)
+with open('ldaJobStatus.txt', 'a') as f:
+    f.write('sanity czech\n')
+
 import os
 import json
+# import sys
 import random
 from datetime import date
 import gensim

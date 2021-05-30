@@ -136,3 +136,8 @@ dmypy.json
 
 # dask
 *dask*
+
+
+# job
+job.*.err
+job.*.out
