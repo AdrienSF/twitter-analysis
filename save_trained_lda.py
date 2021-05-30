@@ -9,8 +9,8 @@ from nltk.stem import WordNetLemmatizer, SnowballStemmer
 import nltk
 nltk.download('wordnet')
 
-filenames = os.listdir('data/unzipped')
-filenames = [ 'data/unzipped/'+filename for filename in filenames ]
+filenames = os.listdir('twitter_data')
+filenames = [ 'twitter_data/'+filename for filename in filenames ]
 
 filenames = filenames[:4]
 
