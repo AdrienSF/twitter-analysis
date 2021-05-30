@@ -32,18 +32,22 @@ def compute_coherence_values(corpus, dictionary, k, a='symmetric', b=None, coher
 
 
 
-def lemmatize_stemming(text):
-    return SnowballStemmer('english').stem(WordNetLemmatizer().lemmatize(text, pos='v'))
+def lemmatize_stemming(text, stemmer, lemmatizer):
+    # return SnowballStemmer('english').stem(WordNetLemmatizer().lemmatize(text, pos='v'))
+    return stemmer.stem(lemmatizer.lemmatize(text, pos='v'))
 
-def get_preprocessed(text):
+def get_preprocessed(text, stemmer, lemmatizer):
     result = []
     for token in gensim.utils.simple_preprocess(text):
-        if token not in gensim.parsing.preprocessing.STOPWORDS and len(token) > 3:
-            result.append(lemmatize_stemming(token))
+        if token not in gensim.parsing.preprocessing.STOPWORDS and len(token) > 3: #[NOTE]: maybe should relax this restriction of >3
+            result.append(lemmatize_stemming(token, stemmer, lemmatizer))
     return result
 
 
 def load_tweets(filenames, preprocess=False):
+    stemmer = SnowballStemmer('english')
+    lemmatizer = WordNetLemmatizer()
+
     all_tweets = []
     for filename in filenames:
         with open(filename, 'r') as f:
@@ -56,7 +60,7 @@ def load_tweets(filenames, preprocess=False):
 
         # take tweet text  or full_text if the tweet has that attribute
         if preprocess:
-            ttexts = [ get_preprocessed(tweet['extended_tweet']['full_text']) if 'full_text' in tweet else get_preprocessed(tweet['text']) for tweet in tweets]
+            ttexts = [ get_preprocessed(tweet['extended_tweet']['full_text'], stemmer, lemmatizer) if 'full_text' in tweet else get_preprocessed(tweet['text'], stemmer, lemmatizer) for tweet in tweets]
         else:
             ttexts = [ tweet['extended_tweet']['full_text'] if 'full_text' in tweet else tweet['text'] for tweet in tweets]
 
