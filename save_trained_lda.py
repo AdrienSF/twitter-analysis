@@ -1,5 +1,7 @@
-with open('ldaJobStatus.txt', 'a') as f:
-    f.write('sanity czech\n')
+
+def log(message: str):
+    with open('lda_progress.txt', 'a') as f:
+        f.write(message+'\n')
 
 import os
 import json
@@ -12,12 +14,13 @@ from nltk.stem import WordNetLemmatizer, SnowballStemmer
 import nltk
 nltk.download('wordnet')
 
+log('loading filenames')
 filenames = os.listdir('twitter_data')
 filenames = [ 'twitter_data/'+filename for filename in filenames ]
 
 
 save_dirname = 'trained-' + str(date.today())
-# redo everything  but with yield, and faster?
+log('done')
 
 
 class TweetLoader:
@@ -35,7 +38,7 @@ class TweetLoader:
         for i in range(len(self.filenames)):
             filename = self.filenames[i]
             if i % int(len(self.filenames)/10) == 0:
-                print('loading files:', int(100*i/len(self.filenames)), '%')
+                log('loading files: ' + str(int(100*i/len(self.filenames))) + '%')
             with open(filename, 'r') as f:
                     # add commas between tweets to correct json syntax
                 tweet_list = json.loads('['+f.read().replace('}{','},{')+']')
@@ -55,12 +58,12 @@ class TweetLoader:
 
 
 tweet_loader = TweetLoader(filenames)
-print('building dictionary...')
+log('building dictionary...')
 dictionary = gensim.corpora.Dictionary(tweet_loader)
 if not os.path.isdir(save_dirname):
     os.makedirs(save_dirname)
 dictionary.save(save_dirname + '/dictionary')
-print('saved')
+log('saved')
 
 
 class BowCorpus:
@@ -72,10 +75,10 @@ class BowCorpus:
         for tokenized in self.token_corpus:
             yield self.dictionary.doc2bow(tokenized)
 
-print('building tfidf')
+log('building tfidf')
 tfidf = gensim.models.TfidfModel(BowCorpus(dictionary, tweet_loader))
 tfidf.save(save_dirname + '/tfidf')
-print('saved')
+log('saved')
 
 
 class TfidfCorpus:
@@ -87,10 +90,10 @@ class TfidfCorpus:
         for doc in self.bow_corpus:
             yield self.tfidf[doc]
 
-print('building lda model')
+log('building lda model')
 lda_model = gensim.models.LdaMulticore(TfidfCorpus(tfidf, BowCorpus(dictionary, tweet_loader)), num_topics=14, id2word=dictionary, passes=5, workers=8, alpha=0.01, eta=.91)
 lda_model.save(save_dirname + '/trained_lda')
-print('saved')
+log('saved')
 
 # for idx, topic in lda_model.print_topics(-1):
 #     print('Topic: {} \nWords: {}'.format(idx, topic))
