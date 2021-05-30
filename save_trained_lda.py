@@ -12,7 +12,6 @@ nltk.download('wordnet')
 filenames = os.listdir('twitter_data')
 filenames = [ 'twitter_data/'+filename for filename in filenames ]
 
-filenames = filenames[:4]
 
 save_dirname = 'trained-' + str(date.today())
 # redo everything  but with yield, and faster?
