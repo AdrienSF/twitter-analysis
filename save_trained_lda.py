@@ -1,3 +1,4 @@
+print('sanity check', file=sys.stderr)
 import os
 import json
 import random
