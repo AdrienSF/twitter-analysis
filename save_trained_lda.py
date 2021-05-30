@@ -7,7 +7,7 @@ import gensim
 from helpers import lemmatize_stemming, get_preprocessed, compute_coherence_values, load_tweets
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 import nltk
-# nltk.download('wordnet')
+nltk.download('wordnet')
 
 filenames = os.listdir('data/unzipped')
 filenames = [ 'data/unzipped/'+filename for filename in filenames ]
