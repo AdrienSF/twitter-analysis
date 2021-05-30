@@ -2,7 +2,6 @@ import os
 import json
 import random
 import sys
-import numpy as np
 from datetime import date
 import gensim
 from helpers import lemmatize_stemming, get_preprocessed, compute_coherence_values, load_tweets
