@@ -1,6 +1,6 @@
 
 def log(message: str):
-    with open('lda_progress.txt', 'a') as f:
+    with open('log_progress.txt', 'a') as f:
         f.write(message+'\n')
 
 import os
@@ -37,9 +37,9 @@ class TweetLoader:
     def __iter__(self):
         for i in range(len(self.filenames)):
             filename = self.filenames[i]
-            if i % int(len(self.filenames)/10) == 0:
+            if i % int(len(self.filenames)/100) == 0:
                 log('loading files: ' + str(int(100*i/len(self.filenames))) + '%')
-            with open(filename, 'r') as f:
+            with open(filename, 'r', errors='replace') as f:
                     # add commas between tweets to correct json syntax
                 tweet_list = json.loads('['+f.read().replace('}{','},{')+']')
 
