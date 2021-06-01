@@ -1,7 +1,12 @@
 
 def log(message: str):
-    with open('log_progress.txt', 'a') as f:
+    with open('progress.log', 'a') as f:
         f.write(message+'\n')
+
+def log_broken_file(e, broken_filename: str):
+    with open('broken_files.log', 'a') as f:
+        f.write(broken_filename+'\n')
+        f.write(str(e))
 
 import os
 import json
@@ -40,8 +45,13 @@ class TweetLoader:
             if i % int(len(self.filenames)/100) == 0:
                 log('loading files: ' + str(int(100*i/len(self.filenames))) + '%')
             with open(filename, 'r', errors='replace') as f:
-                    # add commas between tweets to correct json syntax
-                tweet_list = json.loads('['+f.read().replace('}{','},{')+']')
+                # add commas between tweets to correct json syntax (doesn't always work, as expected)
+                try:
+                    tweet_list = json.loads('['+f.read().replace('}{','},{')+']')
+                except e:
+                    log_broken_file(e, filename)
+                    continue
+
 
             for tweet in tweet_list:
                 if 'retweeted_status' not in tweet and tweet['lang'] == 'en':
