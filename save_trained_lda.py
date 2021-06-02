@@ -48,7 +48,7 @@ class TweetLoader:
                 # add commas between tweets to correct json syntax (doesn't always work, as expected)
                 try:
                     tweet_list = json.loads('['+f.read().replace('}{','},{')+']')
-                except e:
+                except Exception as e:
                     log_broken_file(e, filename)
                     continue
 
