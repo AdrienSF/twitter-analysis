@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import gensim
 from gensim.models import CoherenceModel
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
@@ -66,6 +67,9 @@ def load_tweets(filenames, processes=False):
                 ttext = tweet['extended_tweet']['full_text']
             else:
                 ttext = tweet['text']
+
+            # remove/replace URLs
+            ttext = re.sub(r"http\S+", "http", subject)
 
             if processes:
                 ttext = gtp(ttext)
