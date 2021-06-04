@@ -43,8 +43,9 @@ def get_preprocessed(text, stemmer, lemmatizer):
             result.append(lemmatize_stemming(token, stemmer, lemmatizer))
     return result
 
+gtp = lambda text: get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer())
 
-def load_tweets(filenames):
+def load_tweets(filenames, processes=False):
 
     all_tweets = []
     for filename in filenames:
@@ -60,11 +61,15 @@ def load_tweets(filenames):
         ttexts = []
         for tweet in tweets:
             if 'full_text' in tweet:
-                ttexts.append(tweet['full_text'])
+                ttext = tweet['full_text']
             elif 'extended_tweet' in tweet and 'full_text' in tweet['extended_tweet']:
-                ttexts.append(tweet['extended_tweet']['full_text'])
+                ttext = tweet['extended_tweet']['full_text']
             else:
-                ttexts.append(tweet['text'])
+                ttext = tweet['text']
+
+            if processes:
+                ttext = gtp(ttext)
+            ttexts.append(ttext)
 
         all_tweets = all_tweets + tweets
 

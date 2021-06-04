@@ -48,3 +48,21 @@ if __name__ == '__main__': # need to wrap everything in this or it breaks due to
 
 
     print('tfidf matrix shape:', X_transormed.shape)
+
+# before sparse dask array, intern strings! stemmed strings will hav lots of repreats
+# load, stem, tokenize (intern str tokens)
+# Count or tfidf vectorize to sparse matrix: vec.fit_transform(tweets).astype(cp.float32)
+# then, lda on gpu ... ? how?
+
+# plot mem of tokenized tweets in function of number of tweets, intern vs non-intern (save runtimes! + wight of unfiltered input tweets)
+# plot mem of sparse tfidf matrix in function of number of tweets (measure at roughly logorithmic intervals?) (save runtimes! + wight of unfiltered input tweets)
+# (have rows*cols*floatmem as comparison if using non sparse mat)
+
+
+
+# dask counterpart of cudf where docs? searching "dask" in cuml docs shows all the dask functions, but the same search in the cudf docs shows only 3 results (none relating to specific classes or functions).
+
+# is there an available version of tensorly that already has some NLP functionality implemented?
+
+# hint I want access to that cluster I heard of...
+# the cluster I have access to has old CUDA (so I can only use old RAPIDS), but I've asked the system administrator to update so I'll be able to use a newer veraion eventually.
