@@ -71,7 +71,7 @@ def load_tweets(filenames, processes=False):
                 ttext = gtp(ttext)
             ttexts.append(ttext)
 
-        all_tweets = all_tweets + tweets
+        all_tweets = all_tweets + ttexts
 
 
     return all_tweets

@@ -1,23 +1,29 @@
 import cudf
 from cudf import Series
 from cuml.feature_extraction.text import TfidfVectorizer
+import warnings
+warnings.filterwarnings('ignore')
 
-
-import os, time, psutil
+import sys, os, time, gc
 os.environ["CUDA_VISIBLE_DEVICES"]='1'
 from helpers import load_tweets
+from guppy import hpy; h=hpy()
+
+
+files_to_load = int(sys.argv[1])
 
 start = time.time()
-filename = 'twitter_data/' + os.listdir('twitter_data')[0]
+filenames = os.listdir('twitter_data')
+filenames = [ 'twitter_data/' + name for name in filenames if '.7z' not in name ][:files_to_load]
 
 # load
-tweets = Series(load_tweets(filename))
+tweets = Series(load_tweets(filenames))
 loaded_tweets = len(tweets)
 
 
-load_mem = psutil.Process(os.getpid()).memory_info().rss
+load_mem = h.heap().size
 load_time = time.time()-start
-with open('tokenize_measure.csv', 'a') as f:
+with open('load_measure.csv', 'a') as f:
     f.write(str(loaded_tweets) + ',' + str(load_time) + ',' + str(load_mem) + '\n')
 
 # token tfidf vectorize
@@ -25,10 +31,12 @@ vec = TfidfVectorizer(stop_words='english')
 tfidf_matrix = vec.fit_transform(tweets)
 
 # clear str tweets from memory?
-tweets = None
+del tweets
+gc.collect()
 
-vect_mem = psutil.Process(os.getpid()).memory_info().rss
-vect_time = time.time()-load_time
+
+vect_mem = h.heap().size
+vect_time = time.time() - start - load_time
 with open('vectorize_measure.csv', 'a') as f:
     f.write(str(loaded_tweets) + ',' + str(vect_time) + ',' + str(vect_mem) + ',' + str(tfidf_matrix.shape) + '\n')
 
