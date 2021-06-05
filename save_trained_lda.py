@@ -70,15 +70,15 @@ class TweetLoader:
 tweet_loader = TweetLoader(filenames)
 # log('building dictionary...')
 # dictionary = gensim.corpora.Dictionary(tweet_loader)
+# dictionary.filter_extremes(no_below=100, no_above=0.5)
 # if not os.path.isdir(save_dirname):
 #     os.makedirs(save_dirname)
 # dictionary.save(save_dirname + '/dictionary')
 # log('saved')
 
 log('loading saved dictionary...')
-dictionary = gensim.corpora.Dictionary.load('trained-2021-06-02/dictionary')
+dictionary = gensim.corpora.Dictionary.load('trained-2021-06-02/filtered_dictionary')
 log('loaded')
-
 
 class BowCorpus:
     def __init__(self, dictionary, token_corpus):
