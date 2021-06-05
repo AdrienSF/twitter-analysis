@@ -69,7 +69,7 @@ def load_tweets(filenames, processes=False):
                 ttext = tweet['text']
 
             # remove/replace URLs
-            ttext = re.sub(r"http\S+", "http", subject)
+            ttext = re.sub(r"http\S+", "http", ttext)
 
             if processes:
                 ttext = gtp(ttext)

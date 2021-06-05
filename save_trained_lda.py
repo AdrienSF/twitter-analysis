@@ -6,7 +6,7 @@ def log(message: str):
 def log_broken_file(e, broken_filename: str):
     with open('broken_files.log', 'a') as f:
         f.write(broken_filename+'\n')
-        f.write(str(e))
+        f.write(str(e)+'\n')
 
 import os
 import json
@@ -68,12 +68,16 @@ class TweetLoader:
 
 
 tweet_loader = TweetLoader(filenames)
-log('building dictionary...')
-dictionary = gensim.corpora.Dictionary(tweet_loader)
-if not os.path.isdir(save_dirname):
-    os.makedirs(save_dirname)
-dictionary.save(save_dirname + '/dictionary')
-log('saved')
+# log('building dictionary...')
+# dictionary = gensim.corpora.Dictionary(tweet_loader)
+# if not os.path.isdir(save_dirname):
+#     os.makedirs(save_dirname)
+# dictionary.save(save_dirname + '/dictionary')
+# log('saved')
+
+log('loading saved dictionary...')
+dictionary = gensim.corpora.Dictionary.load('trained-2021-06-02/dictionary')
+log('loaded')
 
 
 class BowCorpus:

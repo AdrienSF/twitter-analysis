@@ -2,7 +2,7 @@
 
 #SBATCH --partition=cpu-long.q
 #SBATCH --nodes=4
-#SBATCH --time=5-00:00:00
+#SBATCH --time=15-00:00:00
 #SBATCH --job-name=LDAlloc
 #SBATCH --error=job.%J.err
 #SBATCH --output=job.%J.out
