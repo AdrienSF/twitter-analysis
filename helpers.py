@@ -44,9 +44,9 @@ def get_preprocessed(text, stemmer, lemmatizer):
             result.append(lemmatize_stemming(token, stemmer, lemmatizer))
     return result
 
-gtp = lambda text: get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer())
+gtp = lambda text: ' '.join(get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer()))
 
-def load_tweets(filenames, processes=False):
+def load_tweets(filenames, preprocess=False):
 
     all_tweets = []
     for filename in filenames:
@@ -71,7 +71,7 @@ def load_tweets(filenames, processes=False):
             # remove/replace URLs
             ttext = re.sub(r"http\S+", "http", ttext)
 
-            if processes:
+            if preprocess:
                 ttext = gtp(ttext)
             ttexts.append(ttext)
 

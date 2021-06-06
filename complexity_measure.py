@@ -16,8 +16,8 @@ start = time.time()
 filenames = os.listdir('twitter_data')
 filenames = [ 'twitter_data/' + name for name in filenames if '.7z' not in name ][:files_to_load]
 
-# load
-tweets = Series(load_tweets(filenames))
+# load, stem and remove stop words
+tweets = Series(load_tweets(filenames, preprocess=True))
 loaded_tweets = len(tweets)
 
 
