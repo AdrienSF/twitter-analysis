@@ -14,6 +14,6 @@ conda activate rapids-0.19
 
 
 for ((i=2;i<=10;i++)); do
-    python3 complexity_measure.py "$((2**$i))"
+    python3 cpu_complexity_measure.py "$((2**$i))"
 done
 

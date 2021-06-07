@@ -19,7 +19,7 @@ loaded_tweets = len(tweets)
 
 load_mem = h.heap().size
 load_time = time.time()-start
-with open('load_measure.csv', 'a') as f:
+with open('cpu_load_measure.csv', 'a') as f:
     f.write(str(loaded_tweets) + ',' + str(load_time) + ',' + str(load_mem) + '\n')
 
 # tfidf vectorize
@@ -38,7 +38,7 @@ gc.collect()
 
 vect_mem = h.heap().size
 vect_time = time.time() - start - load_time
-with open('vectorize_measure.csv', 'a') as f:
+with open('cpu_tfidf&dict_measure.csv', 'a') as f:
     f.write(str(loaded_tweets) + ',' + str(vect_time) + ',' + str(vect_mem) + ',' + str(tfidf_matrix.shape[1]) + '\n')
 
 
