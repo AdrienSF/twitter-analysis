@@ -1,10 +1,10 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-import sys, time, gc
+import sys, os, time, gc
 from helpers import load_tweets
 from guppy import hpy; h=hpy()
-
+import gensim
 
 files_to_load = int(sys.argv[1])
 
