@@ -28,7 +28,7 @@ dictionary.filter_extremes(no_below=100, no_above=0.5)
 
 bow_corpus = [dictionary.doc2bow(tweet) for tweet in tweets]
 tfidf = gensim.models.TfidfModel(bow_corpus)
-corpus_tfidf = tfidf[bow_corpus]
+tfidf_matrix = tfidf[bow_corpus]
 
 # clear str tweets from memory?
 del bow_corpus
@@ -38,7 +38,7 @@ gc.collect()
 
 vect_mem = h.heap().size
 vect_time = time.time() - start - load_time
-with open('cpu_tfidf&dict_measure.csv', 'a') as f:
+with open('cpu_tfidfandDict_measure.csv', 'a') as f:
     f.write(str(loaded_tweets) + ',' + str(vect_time) + ',' + str(vect_mem) + ',' + str(tfidf_matrix.shape[1]) + '\n')
 
 
