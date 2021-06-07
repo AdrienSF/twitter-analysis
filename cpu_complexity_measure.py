@@ -29,7 +29,7 @@ dictionary.filter_extremes(no_below=100, no_above=0.5)
 bow_corpus = [dictionary.doc2bow(tweet) for tweet in tweets]
 tfidf = gensim.models.TfidfModel(bow_corpus)
 tfidf_matrix = tfidf[bow_corpus]
-
+print(tfidf_matrix)
 # clear str tweets from memory?
 del bow_corpus
 del tweets
