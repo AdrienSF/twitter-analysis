@@ -44,7 +44,7 @@ def get_preprocessed(text, stemmer, lemmatizer):
             result.append(sys.intern(lemmatize_stemming(token, stemmer, lemmatizer)))
     return result
 
-gtp = lambda text: ' '.join(get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer()))
+gtp = lambda text: get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer())
 
 def load_tweets(filenames, preprocess=False):
 
