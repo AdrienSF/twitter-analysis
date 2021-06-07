@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --partition=gpuq
+#SBATCH --partition=defq
 #SBATCH --nodes=1
 #SBATCH --time=0-10:00:00
 #SBATCH --job-name=complexity_measure
