@@ -38,6 +38,6 @@ gc.collect()
 vect_mem = h.heap().size
 vect_time = time.time() - start - load_time
 with open('vectorize_measure.csv', 'a') as f:
-    f.write(str(loaded_tweets) + ',' + str(vect_time) + ',' + str(vect_mem) + ',' + str(tfidf_matrix.shape) + '\n')
+    f.write(str(loaded_tweets) + ',' + str(vect_time) + ',' + str(vect_mem) + ',' + str(tfidf_matrix.shape[1]) + '\n')
 
 

@@ -1,5 +1,5 @@
 import json
-import os
+import os, sys
 import re
 import gensim
 from gensim.models import CoherenceModel
@@ -41,7 +41,7 @@ def get_preprocessed(text, stemmer, lemmatizer):
     result = []
     for token in gensim.utils.simple_preprocess(text):
         if token not in gensim.parsing.preprocessing.STOPWORDS and len(token) > 3: #[NOTE]: maybe should relax this restriction of >3
-            result.append(lemmatize_stemming(token, stemmer, lemmatizer))
+            result.append(sys.intern(lemmatize_stemming(token, stemmer, lemmatizer)))
     return result
 
 gtp = lambda text: ' '.join(get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer()))
