@@ -10,7 +10,7 @@
 module load anaconda3/current
 eval "$(conda shell.bash hook)"
 conda init bash
-conda activate rapids-0.19
+conda activate twittenv
 
 
 for ((i=2;i<=10;i++)); do
