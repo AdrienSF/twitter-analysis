@@ -71,8 +71,8 @@ tweet_loader = TweetLoader(filenames)
 # log('building dictionary...')
 # dictionary = gensim.corpora.Dictionary(tweet_loader)
 # dictionary.filter_extremes(no_below=100, no_above=0.5)
-# if not os.path.isdir(save_dirname):
-#     os.makedirs(save_dirname)
+if not os.path.isdir(save_dirname):
+    os.makedirs(save_dirname)
 # dictionary.save(save_dirname + '/dictionary')
 # log('saved')
 
