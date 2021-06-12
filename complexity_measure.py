@@ -1,7 +1,7 @@
 import cudf
 import cupy
 from cudf import Series
-from cuml.feature_extraction.text import TfidfVectorizer
+from cuml.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -37,7 +37,7 @@ cupy.save('bow_matrix', bow_matrix)
 del tweets
 gc.collect()
 
-
+exit(0)
 vect_mem = h.heap().size
 vect_time = time.time() - start - load_time
 with open('vectorize_measure.csv', 'a') as f:
