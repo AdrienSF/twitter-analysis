@@ -1,4 +1,5 @@
 import cudf
+import cupy
 from cudf import Series
 from cuml.feature_extraction.text import TfidfVectorizer
 import warnings
@@ -27,9 +28,11 @@ with open('load_measure.csv', 'a') as f:
     f.write(str(loaded_tweets) + ',' + str(load_time) + ',' + str(load_mem) + '\n')
 
 # token tfidf vectorize
-vec = TfidfVectorizer(stop_words='english')
-tfidf_matrix = vec.fit_transform(tweets)
-
+# vec = TfidfVectorizer(stop_words='english')
+# tfidf_matrix = vec.fit_transform(tweets)
+vec = CountVectorizer(stop_words='english')
+bow_matrix = vec.fit_transform(tweets)
+cupy.save('bow_matrix', bow_matrix)
 # clear str tweets from memory?
 del tweets
 gc.collect()
