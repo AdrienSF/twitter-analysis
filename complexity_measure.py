@@ -30,14 +30,13 @@ with open('load_measure.csv', 'a') as f:
 # token tfidf vectorize
 # vec = TfidfVectorizer(stop_words='english')
 # tfidf_matrix = vec.fit_transform(tweets)
-vec = CountVectorizer(stop_words='english')
+vec = TfidfVectorizer(stop_words='english', min_df=100)
 bow_matrix = vec.fit_transform(tweets)
 cupy.save('bow_matrix', bow_matrix)
 # clear str tweets from memory?
 del tweets
 gc.collect()
 
-exit(0)
 vect_mem = h.heap().size
 vect_time = time.time() - start - load_time
 with open('vectorize_measure.csv', 'a') as f:

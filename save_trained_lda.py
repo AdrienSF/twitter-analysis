@@ -89,10 +89,15 @@ class BowCorpus:
         for tokenized in self.token_corpus:
             yield self.dictionary.doc2bow(tokenized)
 
-log('building tfidf')
-tfidf = gensim.models.TfidfModel(BowCorpus(dictionary, tweet_loader))
-tfidf.save(save_dirname + '/tfidf')
-log('saved')
+# log('building tfidf')
+# tfidf = gensim.models.TfidfModel(BowCorpus(dictionary, tweet_loader))
+# tfidf.save(save_dirname + '/tfidf')
+# log('saved')
+
+log('loading saved tfidf...')
+tfidf = gensim.models.TfidfModel.load('trained-2021-06-09/tfidf')
+log('loaded')
+
 
 
 class TfidfCorpus:
