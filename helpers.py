@@ -1,4 +1,4 @@
-import json
+import json, random
 import os, sys
 import re
 import gensim
@@ -44,9 +44,10 @@ def get_preprocessed(text, stemmer, lemmatizer):
             result.append(sys.intern(lemmatize_stemming(token, stemmer, lemmatizer)))
     return result
 
-gtp = lambda text: ' '.join(get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer()))
+gtpjoin = lambda text: ' '.join(get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer()))
+gtp = lambda text: get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer())
 
-def load_tweets(filenames, preprocess=False):
+def load_tweets(filenames, preprocess=False, subsample_proportion=1, preprocessor=gtpjoin):
 
     all_tweets = []
     for filename in filenames:
@@ -72,10 +73,10 @@ def load_tweets(filenames, preprocess=False):
             ttext = re.sub(r"http\S+", "http", ttext)
 
             if preprocess:
-                ttext = gtp(ttext)
+                ttext = preprocessor(ttext)
             ttexts.append(ttext)
 
-        all_tweets = all_tweets + ttexts
+        all_tweets = all_tweets + random.sample(ttexts, int(len(ttexts)*subsample_proportion))
 
 
     return all_tweets
