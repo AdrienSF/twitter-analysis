@@ -47,7 +47,7 @@ def get_preprocessed(text, stemmer, lemmatizer):
 gtpjoin = lambda text: ' '.join(get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer()))
 gtp = lambda text: get_preprocessed(text, SnowballStemmer('english'), WordNetLemmatizer())
 
-def load_tweets(filenames, preprocess=False, subsample_proportion=1, preprocessor=gtpjoin):
+def load_tweets(filenames, preprocessor=gtp, subsample_proportion=1):
 
     all_tweets = []
     for filename in filenames:
@@ -72,7 +72,7 @@ def load_tweets(filenames, preprocess=False, subsample_proportion=1, preprocesso
             # remove/replace URLs
             ttext = re.sub(r"http\S+", "http", ttext)
 
-            if preprocess:
+            if preprocessor:
                 ttext = preprocessor(ttext)
             ttexts.append(ttext)
 
