@@ -12,4 +12,4 @@ eval "$(conda shell.bash hook)"
 conda init bash
 conda activate twittenv
 
-python3 save_trained_lda.py
+python3 topic_overview.py
