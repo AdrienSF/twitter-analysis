@@ -57,27 +57,26 @@ for week in dates:
     del tweets
     gc.collect()
 
-    week_filenames = [ name for name in all_filenames if any(substring in name for substring in dates[week]) ]
+    week_filenames = [ name for name in all_filenames if any(substring in name for substring in dates[week]) ][:1]
 
     save_dirname = week + '-' + str(date.today())
     if not os.path.isdir(save_dirname):
         os.makedirs(save_dirname)
 
     log('loading tweets...')
-    tweets = load_tweets(week_filenames, subsample_proportion=.05)
+    tweets = load_tweets(week_filenames, subsample_proportion=.1)
 
 
     log('builing bow corpus')
     bow_corpus = [dictionary.doc2bow(tweet) for tweet in tweets]
-    hundredth = int(len(bow_corpus)/100)
-    tfidf_corpus = sparse.csr_matrix(tfidf[bow_corpus[:hundredth]])
-    for i in range(1, 100):
-        log(str(i))
-        next_chunk = sparse.csr_matrix(tfidf[bow_corpus[i*hundredth:(i+1)*hundredth]])
+    tfidf_corpus = sparse.csr_matrix([tfidf[bow_corpus[0]]])
+    for i in range(1, len(bow_corpus)):
+        if i % int(len(bow_corpus)/100) == 0:
+            # log(str(i))
+            print(str(i/len(bow_corpus)))
+        next_chunk = sparse.csr_matrix([tfidf[bow_corpus[i]]])
         sparse.vstack(tfidf_corpus, next_chunk)   
 
-    next_chunk = sparse.csr_matrix(tfidf[bow_corpus[100*hundredth:]])
-    sparse.vstack(tfidf_corpus, next_chunk)   
 
     # tfidf_corpus = tfidf[bow_corpus]
     log('built')

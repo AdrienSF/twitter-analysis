@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --mem=32GB
+#SBATCH --mem=16GB
 #SBATCH --partition=cpu-long.q
 #SBATCH --nodes=4
 #SBATCH --time=5-00:00:00
