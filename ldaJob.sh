@@ -1,8 +1,9 @@
 #!/bin/bash
 
+#SBATCH --mem=32GB
 #SBATCH --partition=cpu-long.q
 #SBATCH --nodes=4
-#SBATCH --time=7-00:00:00
+#SBATCH --time=5-00:00:00
 #SBATCH --job-name=LDAlloc
 #SBATCH --error=job.%J.err
 #SBATCH --output=job.%J.out

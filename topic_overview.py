@@ -5,6 +5,7 @@ from wordcloud import WordCloud
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel, LdaMulticore, CoherenceModel
 from helpers import load_tweets, compute_coherence_values
+from scipy import sparse
 
 def log(message: str):
     message = str(message)
@@ -68,7 +69,17 @@ for week in dates:
 
     log('builing bow corpus')
     bow_corpus = [dictionary.doc2bow(tweet) for tweet in tweets]
-    tfidf_corpus = tfidf[bow_corpus]
+    hundredth = int(len(bow_corpus)/100)
+    tfidf_corpus = sparse.csr_matrix(tfidf[bow_corpus[:hundredth]])
+    for i in range(1, 100):
+        log(str(i))
+        next_chunk = sparse.csr_matrix(tfidf[bow_corpus[i*hundredth:(i+1)*hundredth]])
+        sparse.vstack(tfidf_corpus, next_chunk)   
+
+    next_chunk = sparse.csr_matrix(tfidf[bow_corpus[100*hundredth:]])
+    sparse.vstack(tfidf_corpus, next_chunk)   
+
+    # tfidf_corpus = tfidf[bow_corpus]
     log('built')
 
     log('building lda model')
@@ -78,12 +89,6 @@ for week in dates:
 
 
 
-    # check coherence
-    coherence_model_lda = CoherenceModel(model=lda_model, texts=tweets, coherence='c_v', processes=4)
-
-    log(coherence_model_lda.get_coherence())
-
-
     # generate word cloud
     for t in range(lda_model.num_topics):
         plt.figure()
@@ -91,3 +96,10 @@ for week in dates:
         plt.axis("off")
         plt.title("Topic #" + str(t))
         plt.savefig(save_dirname+'/topic'+str(t)+'wordcloud.pdf', format='pdf')
+
+
+
+    # check coherence
+    coherence_model_lda = CoherenceModel(model=lda_model, texts=tweets, coherence='c_v', processes=4)
+
+    log(coherence_model_lda.get_coherence())
