@@ -5,7 +5,16 @@ from wordcloud import WordCloud
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel, LdaMulticore, CoherenceModel
 from helpers import load_tweets, compute_coherence_values
-from scipy import sparse
+
+class MyCorpus:
+    def __init__(self, tfidf, bow_corpus):
+        self.tfidf = tfidf
+        self.bow_corpus = bow_corpus
+
+    def __iter__(self):
+        for tweet in self.bow_corpus:
+            yield tfidf[tweet]
+
 
 def log(message: str):
     message = str(message)
@@ -67,22 +76,15 @@ for week in dates:
     tweets = load_tweets(week_filenames, subsample_proportion=.1)
 
 
-    log('builing bow corpus')
+    log('builing tfidf corpus')
     bow_corpus = [dictionary.doc2bow(tweet) for tweet in tweets]
-    tfidf_corpus = sparse.csr_matrix([tfidf[bow_corpus[0]]])
-    for i in range(1, len(bow_corpus)):
-        if i % int(len(bow_corpus)/100) == 0:
-            # log(str(i))
-            print(str(i/len(bow_corpus)))
-        next_chunk = sparse.csr_matrix([tfidf[bow_corpus[i]]])
-        sparse.vstack(tfidf_corpus, next_chunk)   
 
-
-    # tfidf_corpus = tfidf[bow_corpus]
+    tfidf_corpus = MyCorpus(tfidf, bow_corpus)
     log('built')
 
+
     log('building lda model')
-    lda_model = LdaMulticore(tfidf_corpus, num_topics=500, id2word=dictionary, passes=5, workers=8)
+    lda_model = LdaMulticore(tfidf_corpus, num_topics=2, id2word=dictionary, passes=5, workers=8)
     lda_model.save(save_dirname + '/trained_lda')
     log('saved')
 
