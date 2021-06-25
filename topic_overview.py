@@ -66,14 +66,14 @@ for week in dates:
     del tweets
     gc.collect()
 
-    week_filenames = [ name for name in all_filenames if any(substring in name for substring in dates[week]) ][:1]
+    week_filenames = [ name for name in all_filenames if any(substring in name for substring in dates[week]) ]
 
     save_dirname = week + '-' + str(date.today())
     if not os.path.isdir(save_dirname):
         os.makedirs(save_dirname)
 
     log('loading tweets...')
-    tweets = load_tweets(week_filenames, subsample_proportion=.1)
+    tweets = load_tweets(week_filenames, subsample_proportion=.001)
 
 
     log('builing tfidf corpus')
@@ -84,7 +84,7 @@ for week in dates:
 
 
     log('building lda model')
-    lda_model = LdaMulticore(tfidf_corpus, num_topics=2, id2word=dictionary, passes=5, workers=8)
+    lda_model = LdaMulticore(tfidf_corpus, num_topics=500, id2word=dictionary, passes=5, workers=4)
     lda_model.save(save_dirname + '/trained_lda')
     log('saved')
 
