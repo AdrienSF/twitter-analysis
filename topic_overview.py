@@ -23,6 +23,15 @@ def log(message: str):
 
 
 dates = {
+    'end':
+    ['2020-08-11',
+    '2020-08-12',
+    '2020-08-13',
+    '2020-08-14',
+    '2020-08-15',
+    '2020-08-16',
+    '2020-08-17']
+    ,
     'start':
     ['2020-04-23',
     '2020-04-24',
@@ -40,15 +49,7 @@ dates = {
     '2020-06-16',
     '2020-06-17',
     '2020-06-18']
-    ,
-    'end':
-    ['2020-08-11',
-    '2020-08-12',
-    '2020-08-13',
-    '2020-08-14',
-    '2020-08-15',
-    '2020-08-16',
-    '2020-08-17']
+    
 }
 
 all_filenames = os.listdir('twitter_data')
@@ -97,10 +98,11 @@ for week in dates:
         plt.axis("off")
         plt.title("Topic #" + str(t))
         plt.savefig(save_dirname+'/topic'+str(t)+'wordcloud.pdf', format='pdf')
+        plt.close()
 
 
 
     # check coherence
     coherence_model_lda = CoherenceModel(model=lda_model, texts=tweets, coherence='c_v', processes=4)
 
-    log(coherence_model_lda.get_coherence())
+    log(save_dirname + ': ' + str(coherence_model_lda.get_coherence()))
