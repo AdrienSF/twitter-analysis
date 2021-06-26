@@ -56,7 +56,8 @@ all_filenames = os.listdir('twitter_data')
 all_filenames = [ 'twitter_data/'+filename for filename in all_filenames ]
 
 log('loading saved dictionary...')
-dictionary = Dictionary.load('trained-2021-06-02/filtered_dictionary')
+# dictionary = Dictionary.load('trained-2021-06-02/filtered_dictionary')
+dictionary = Dictionary.load('trained-2021-06-02/dictionary') # maybe it was a bit too filtered?
 log('loaded')
 
 log('loading saved tfidf...')
@@ -85,7 +86,7 @@ for week in dates:
 
 
     log('building lda model')
-    lda_model = LdaMulticore(tfidf_corpus, num_topics=500, id2word=dictionary, passes=5, workers=4)
+    lda_model = LdaMulticore(tfidf_corpus, num_topics=200, id2word=dictionary, passes=5, workers=4)
     lda_model.save(save_dirname + '/trained_lda')
     log('saved')
 

@@ -131,9 +131,10 @@ dmypy.json
 
 
 
-# data
+# data (these files are too heavy)
 *data
-# *.npy
+*.npy
+
 
 # dask
 *dask*
