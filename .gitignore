@@ -133,7 +133,7 @@ dmypy.json
 
 # data
 *data
-*.npy
+# *.npy
 
 # dask
 *dask*
