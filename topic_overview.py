@@ -107,7 +107,7 @@ all_filenames = [ 'twitter_data/'+filename for filename in all_filenames ]
 
 ##########################
 
-
+tweets = []
 for week in dates:
     del tweets
     gc.collect()
