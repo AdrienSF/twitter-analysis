@@ -10,7 +10,7 @@ from tensorly.cp_tensor import cp_mode_dot
 import tensorly.tenalg as tnl
 from tensorly.tenalg.core_tenalg import tensor_dot, batched_tensor_dot, outer, inner
 
-import pandas as pd
+# import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
