@@ -60,7 +60,7 @@ from tlda_final import TLDA
 
 import os, time
 from helpers import load_tweets, log
-# from guppy import hpy; h=hpy()
+from guppy import hpy; h=hpy()
 
 
 ######### IMPORTS ########
@@ -109,10 +109,13 @@ all_filenames = [ 'twitter_data/'+filename for filename in all_filenames ]
 
 tweets = []
 for week in dates:
+# for week in ['test']:
     del tweets
     gc.collect()
 
     week_filenames = [ name for name in all_filenames if any(substring in name for substring in dates[week]) ]
+    # week_filenames = ['data/unzipped/' + name for name in os.listdir('data/unzipped')]
+
 
     log('')
     log('START PROCESSING ' + week)
@@ -122,10 +125,11 @@ for week in dates:
     log(datetime.now())
     start = time.time()
     tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=.01)
+    # tweets = load_tweets(week_filenames[:2], preprocessor=None, subsample_proportion=1)
     n_samples = len(tweets)
     log('loaded tweets: ' + str(len(tweets)))
     log('load time: ' + str(time.time()-start))
-    # log('mem after load: ' + str(h.heap().size))
+    log('mem after load: ' + str(h.heap().size))
     log(datetime.now())
 
 
@@ -137,20 +141,27 @@ for week in dates:
                                     min_df = int(0.002*n_samples))
 
     tweet_mat = countvec.fit_transform(tweets)
+    log('mem after gen tweet_mat: ' + str(h.heap().size))
 
     sparse_tweet_mat = scipy.sparse.csr_matrix(tweet_mat)
+    log('mem after gen sparse_tweet_mat: ' + str(h.heap().size))
 
     tweet_tensor = tl.tensor(sparse_tweet_mat.toarray(),dtype=np.float16)
+    log('mem after gen tweet_tensor: ' + str(h.heap().size))
 
     del sparse_tweet_mat
+    del tweet_mat
     gc.collect()
+    log('mem after gc: ' + str(h.heap().size))
 
     M1 = tl.mean(tweet_tensor, axis=0)
 
 
     centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #center the data using the first moment 
-
+    log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
+    del tweet_tensor
     gc.collect()
+    log('mem after gc: ' + str(h.heap().size))
 
 
     start = datetime.now()
@@ -171,14 +182,16 @@ for week in dates:
     filename = 'whitened_tweet_mat-' + week + str(date.today()) + '.npy'
     np.save(filename, whitened_tweet_mat, allow_pickle=False)
     log('saved whitened data to ' + filename)
+    log('mem after whitening: ' + str(h.heap().size))
 
     now = datetime.now()
     log(now)
     pca_time = now - start 
 
-
+    del centered_tweet_mat
     gc.collect()
     log('pca and whitening time: ' + str(pca_time))
+    log('mem after gc: ' + str(h.heap().size))
 
 
     now = datetime.now()
@@ -197,6 +210,7 @@ for week in dates:
     log('training tlda...')
     t.fit(whitened_tweet_mat,verbose=True) # fit whitened wordcounts to get decomposition of M3 through SGD
     log('trained')
+    log('mem after tlda fit: ' + str(h.heap().size))
     now = datetime.now()
     log(now)
 
@@ -220,6 +234,7 @@ for week in dates:
     log(alpha_norm)
     log('normalizing the factors?')
     t.predict(whitened_tweet_mat,w_mat=True,doc_predict=False)  # normalize the factors 
+    log('mem: ' + str(h.heap().size))
 
     log('###################################')
     now = datetime.now()
