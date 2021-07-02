@@ -1,26 +1,73 @@
-import json, os, gc
-from datetime import date
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud
-from gensim.corpora import Dictionary
-from gensim.models import TfidfModel, LdaMulticore, CoherenceModel
-from helpers import load_tweets, compute_coherence_values
+######### IMPORTS ########
 
-class MyCorpus:
-    def __init__(self, tfidf, bow_corpus):
-        self.tfidf = tfidf
-        self.bow_corpus = bow_corpus
+import numpy as np
+import math
+from scipy.stats import gamma
+from sklearn.decomposition import IncrementalPCA
 
-    def __iter__(self):
-        for tweet in self.bow_corpus:
-            yield tfidf[tweet]
+import tensorly as tl
+from tensorly.cp_tensor import cp_mode_dot
+import tensorly.tenalg as tnl
+from tensorly.tenalg.core_tenalg import tensor_dot, batched_tensor_dot, outer, inner
+
+import pandas as pd
+
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+from pca import PCA
+
+# Import TensorLy
+import tensorly as tl
+from tensorly.tenalg import kronecker
+from tensorly import norm
+from tensorly.decomposition import symmetric_parafac_power_iteration as sym_parafac
+from tensorly.tenalg.core_tenalg.tensor_product import batched_tensor_dot
+from tensorly.testing import assert_array_equal, assert_array_almost_equal
+
+from tensorly.contrib.sparse.cp_tensor import cp_to_tensor
+
+from tlda_final import TLDA
+import cumulant_gradient
+import tensor_lda_util as tl_util
+## Break down into steps, then re-engineer.
+
+import nltk
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
+from nltk import word_tokenize
+from nltk.stem import WordNetLemmatizer 
+from nltk.corpus import wordnet
+from nltk.stem import PorterStemmer
+porter = PorterStemmer()
+
+from helpers import gtp 
+
+        
+import gc
+from datetime import datetime, date
+import random
+
+import scipy
+
+from importlib import reload  
+import tlda_final
+reload(tlda_final)
+from tlda_final import TLDA
 
 
-def log(message: str):
-    message = str(message)
-    with open('progress.log', 'a') as f:
-        f.write(message+'\n')
+import os, time
+from helpers import load_tweets, log
+# from guppy import hpy; h=hpy()
 
+
+######### IMPORTS ########
+
+
+# tweet load setup ############
+# filenames = ['../data/unzipped/' + name for name in os.listdir('../data/unzipped')]
 
 dates = {
     'start':
@@ -55,55 +102,140 @@ dates = {
 all_filenames = os.listdir('twitter_data')
 all_filenames = [ 'twitter_data/'+filename for filename in all_filenames ]
 
-log('loading saved dictionary...')
-# dictionary = Dictionary.load('trained-2021-06-02/filtered_dictionary')
-dictionary = Dictionary.load('trained-2021-06-02/dictionary') # maybe it was a bit too filtered?
-log('loaded')
 
-log('loading saved tfidf...')
-tfidf = TfidfModel.load('trained-2021-06-09/tfidf')
-log('loaded')
-tweets = []
+
+
+##########################
+
+
 for week in dates:
     del tweets
     gc.collect()
 
     week_filenames = [ name for name in all_filenames if any(substring in name for substring in dates[week]) ]
 
-    save_dirname = week + '-' + str(date.today())
-    if not os.path.isdir(save_dirname):
-        os.makedirs(save_dirname)
+    log('')
+    log('START PROCESSING ' + week)
 
-    log('loading tweets...')
-    tweets = load_tweets(week_filenames, subsample_proportion=.001)
+    # measure runtime
+    log('loading data...')
+    log(datetime.now())
+    start = time.time()
+    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=.01)
+    n_samples = len(tweets)
+    log('loaded tweets: ' + str(len(tweets)))
+    log('load time: ' + str(time.time()-start))
+    # log('mem after load: ' + str(h.heap().size))
+    log(datetime.now())
 
 
-    log('builing tfidf corpus')
-    bow_corpus = [dictionary.doc2bow(tweet) for tweet in tweets]
+    countvec = CountVectorizer(tokenizer=gtp,
+                                    strip_accents = 'unicode', # works
+                                    lowercase = True, # works
+                                    ngram_range = (1,2),
+                                    max_df = 0.4, # works
+                                    min_df = int(0.002*n_samples))
 
-    tfidf_corpus = MyCorpus(tfidf, bow_corpus)
-    log('built')
+    tweet_mat = countvec.fit_transform(tweets)
+
+    sparse_tweet_mat = scipy.sparse.csr_matrix(tweet_mat)
+
+    tweet_tensor = tl.tensor(sparse_tweet_mat.toarray(),dtype=np.float16)
+
+    del sparse_tweet_mat
+    gc.collect()
+
+    M1 = tl.mean(tweet_tensor, axis=0)
 
 
-    log('building lda model')
-    lda_model = LdaMulticore(tfidf_corpus, num_topics=200, id2word=dictionary, passes=5, workers=4)
-    lda_model.save(save_dirname + '/trained_lda')
+    centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #center the data using the first moment 
+
+    gc.collect()
+
+
+    start = datetime.now()
+    log(start)
+
+
+    batch_size = int(n_samples/20)
+    verbose = True
+    n_topic =  20
+
+    beta_0=0.003
+    log('fitting pca')
+    pca = PCA(n_topic, beta_0, 30000)
+    pca.fit(centered_tweet_mat) # fits PCA to  data, gives W
+    log('whitening')
+    whitened_tweet_mat = pca.transform(centered_tweet_mat) # produces a whitened words counts <W,x> for centered data x
+    # save whitened for subsequent use
+    filename = 'whitened_tweet_mat-' + week + str(date.today()) + '.npy'
+    np.save(filename, whitened_tweet_mat, allow_pickle=False)
+    log('saved whitened data to ' + filename)
+
+    now = datetime.now()
+    log(now)
+    pca_time = now - start 
+
+
+    gc.collect()
+    log('pca and whitening time: ' + str(pca_time))
+
+
+    now = datetime.now()
+    log(now)
+    log('initializing tlda')
+    learning_rate = 0.01 
+    batch_size =15000
+    t = TLDA(n_topic,n_senti=1, alpha_0= beta_0, n_iter_train=1000, n_iter_test=150, batch_size=batch_size,
+            learning_rate=learning_rate)
+
+    now = datetime.now()
+    log(now)
+
+
+
+    log('training tlda...')
+    t.fit(whitened_tweet_mat,verbose=True) # fit whitened wordcounts to get decomposition of M3 through SGD
+    log('trained')
+    now = datetime.now()
+    log(now)
+
+
+
+
+    log('unwhitening eigenvectors to get unscaled word-level factors...')
+    t.factors_ = pca.reverse_transform(t.factors_)  # unwhiten the eigenvectors to get unscaled word-level factors
+
+    ''' 
+    Recover alpha_hat from the eigenvalues of M3
+    '''  
+    log('doing other things?################')
+    eig_vals = [np.linalg.norm(k,3) for k in t.factors_ ]
+    # normalize beta
+    alpha      = np.power(eig_vals, -2)
+    log(alpha.shape)
+    alpha_norm = (alpha / alpha.sum()) * beta_0
+    t.alpha_   = alpha_norm
+            
+    log(alpha_norm)
+    log('normalizing the factors?')
+    t.predict(whitened_tweet_mat,w_mat=True,doc_predict=False)  # normalize the factors 
+
+    log('###################################')
+    now = datetime.now()
+    log(now)
+
     log('saved')
 
-
-
-    # generate word cloud
-    for t in range(lda_model.num_topics):
-        plt.figure()
-        plt.imshow(WordCloud(background_color='white').fit_words(dict(lda_model.show_topic(t, 200))))
-        plt.axis("off")
-        plt.title("Topic #" + str(t))
-        plt.savefig(save_dirname+'/topic'+str(t)+'wordcloud.pdf', format='pdf')
-        plt.close()
-
-
-
-    # check coherence
-    coherence_model_lda = CoherenceModel(model=lda_model, texts=tweets, coherence='c_v', processes=4)
-
-    log(save_dirname + ': ' + str(coherence_model_lda.get_coherence()))
+    log('TOPICS:')
+    n_top_words=20
+    #print(t_n_indices)
+    n_sentiments = 1
+    for k in range(n_topic*n_sentiments):
+        if k ==0:
+            t_n_indices   =t.factors_[k,:].argsort()[:-n_top_words - 1:-1]
+            top_words_JST = [i for i,v in countvec.vocabulary_.items() if v in t_n_indices]
+        else:
+            t_n_indices   =t.factors_[k,:].argsort()[:-n_top_words - 1:-1]
+            top_words_JST = np.vstack([top_words_JST, [i for i,v in countvec.vocabulary_.items() if v in t_n_indices]])
+            log([i for i,v in countvec.vocabulary_.items() if v in t_n_indices])
