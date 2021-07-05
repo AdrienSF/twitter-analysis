@@ -124,7 +124,7 @@ for week in dates:
     log('loading data...')
     log(datetime.now())
     start = time.time()
-    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=1)
+    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=.5)
     # tweets = load_tweets(week_filenames[:2], preprocessor=None, subsample_proportion=1)
     n_samples = len(tweets)
     log('loaded tweets: ' + str(len(tweets)))
@@ -146,11 +146,14 @@ for week in dates:
     sparse_tweet_mat = scipy.sparse.csr_matrix(tweet_mat)
     log('mem after gen sparse_tweet_mat: ' + str(h.heap().size))
 
+    del tweet_mat
+    gc.collect()
+    log('mem after gc: ' + str(h.heap().size))
+
     tweet_tensor = tl.tensor(sparse_tweet_mat.toarray(),dtype=np.float16)
     log('mem after gen tweet_tensor: ' + str(h.heap().size))
 
     del sparse_tweet_mat
-    del tweet_mat
     gc.collect()
     log('mem after gc: ' + str(h.heap().size))
 
