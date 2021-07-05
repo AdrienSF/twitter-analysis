@@ -124,7 +124,7 @@ for week in dates:
     log('loading data...')
     log(datetime.now())
     start = time.time()
-    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=.01)
+    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=1)
     # tweets = load_tweets(week_filenames[:2], preprocessor=None, subsample_proportion=1)
     n_samples = len(tweets)
     log('loaded tweets: ' + str(len(tweets)))
@@ -170,7 +170,7 @@ for week in dates:
 
     batch_size = int(n_samples/20)
     verbose = True
-    n_topic =  20
+    n_topic =  500
 
     beta_0=0.003
     log('fitting pca')
