@@ -124,7 +124,7 @@ for week in dates:
     log('loading data...')
     log(datetime.now())
     start = time.time()
-    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=.5)
+    tweets = load_tweets(week_filenames, preprocessor=None, subsample_proportion=.1)
     # tweets = load_tweets(week_filenames[:2], preprocessor=None, subsample_proportion=1)
     n_samples = len(tweets)
     log('loaded tweets: ' + str(len(tweets)))

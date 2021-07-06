@@ -39,7 +39,8 @@ def compute_coherence_values(corpus, dictionary, k, a='symmetric', b=None, coher
 
 def lemmatize_stemming(text, stemmer, lemmatizer):
     # return SnowballStemmer('english').stem(WordNetLemmatizer().lemmatize(text, pos='v'))
-    return stemmer.stem(lemmatizer.lemmatize(text, pos='v'))
+    ttext = stemmer.stem(lemmatizer.lemmatize(text, pos='v'))
+    return re.sub(r"http\S+", "http", ttext)
 
 def get_preprocessed(text, stemmer, lemmatizer):
     result = []
@@ -74,7 +75,7 @@ def load_tweets(filenames, preprocessor=gtp, subsample_proportion=1):
                 ttext = tweet['text']
 
             # remove/replace URLs
-            ttext = re.sub(r"http\S+", "http", ttext)
+            # ttext = re.sub(r"http\S+", "http", ttext) # too slow
 
             if preprocessor:
                 ttext = preprocessor(ttext)
