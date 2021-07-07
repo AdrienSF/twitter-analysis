@@ -134,6 +134,7 @@ dmypy.json
 # data (these files are too heavy)
 *data
 *.npy
+*.pickle
 
 
 # dask
