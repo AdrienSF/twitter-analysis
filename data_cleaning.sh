@@ -2,9 +2,9 @@
 
 #SBATCH --mem=32GB
 #SBATCH --partition=cpu-long.q
-#SBATCH --nodes=4
+#SBATCH --nodes=1
 #SBATCH --time=7-00:00:00
-#SBATCH --job-name=cleanData
+#SBATCH --job-name=sortTweets
 #SBATCH --error=job.%J.err
 #SBATCH --output=job.%J.out
 
@@ -13,4 +13,4 @@ eval "$(conda shell.bash hook)"
 conda init bash
 conda activate twittenv
 
-python3 clean_data.py
+python3 sort_tweets.py
