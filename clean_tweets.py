@@ -1,8 +1,7 @@
 from multiprocessing import Process
 import pickle
 from datetime import datetime
-
-from helpers import load_tweets
+import os, json
 
 
 def pickle_tweets(filenames: list):
@@ -34,11 +33,11 @@ def pickle_tweets(filenames: list):
     
 
     # get new filename
-    start_date = all_tweets[0]
+    start_date = all_tweets[0][0]
     start_date = datetime.strftime(datetime.strptime(start_date,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
     start_date = date.replace(' ', '_').replace(':','-')
 
-    end_date = all_tweets[-1]
+    end_date = all_tweets[-1][0]
     end_date = datetime.strftime(datetime.strptime(end_date,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
     end_date = date.replace(' ', '_').replace(':','-')
 
@@ -61,6 +60,7 @@ def split_job(filenames: list):
 all_filenames = os.listdir('twitter_data')
 all_filenames = [ 'twitter_data/'+filename for filename in all_filenames ]
 eighth = int(len(all_filenames)/8)
+procs = []
 for i in range(8):
     filenames = all_filenames[i*eighth:(i+1)*eighth]
     procs.append(Process(target=split_job, args=(filenames,)))
