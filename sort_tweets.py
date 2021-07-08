@@ -31,6 +31,7 @@ def sort_tweets(filenames: list):
     gc.collect()
     print('done')
 
+    print('saving chunks...')
     while all_tweets:
         # split tweets into week long chunks
         chunk = [all_tweets.pop(0)]
