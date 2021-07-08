@@ -11,6 +11,8 @@ from datetime import datetime
 import os, json, gc
 from guppy import hpy; h=hpy()
 
+from helpers import log
+
 
 
 def sort_tweets(filenames: list):
