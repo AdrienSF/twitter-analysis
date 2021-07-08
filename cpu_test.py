@@ -80,14 +80,13 @@ log('mem after load whitened: ' + str(h.heap().size))
 
 now = datetime.now()
 log(now)
-pca_time = now - start 
 
 del centered_tweet_mat
 gc.collect()
-log('pca and whitening time: ' + str(pca_time))
 log('mem after gc: ' + str(h.heap().size))
 
-
+n_topic = 500
+beta_0=0.003
 now = datetime.now()
 log(now)
 log('initializing tlda')
