@@ -9,15 +9,23 @@ from multiprocessing import Process
 import pickle
 from datetime import datetime
 import os, json, gc
+from guppy import hpy; h=hpy()
+
 
 
 def sort_tweets(filenames: list):
     all_tweets = []
     # load tweets
-    for filename in filenames:
+    for i in range(len(filenames)):
+        filename = filenames[i]
         with open(filename, 'rb') as f:
             all_tweets = all_tweets + pickle.load(f)
-    print('total tweet:', len(all_tweets))
+
+        print('loaded files:', i)
+        print('mem:', str(h.heap().size))
+
+
+    print('total tweets:', len(all_tweets))
 
     # change each date str to a date object
     print('changing tweet date str to datetime obj...')
