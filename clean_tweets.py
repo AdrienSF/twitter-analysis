@@ -30,16 +30,16 @@ def pickle_tweets(filenames: list):
             to_save.append((date, ttext))
 
         all_tweets = all_tweets + to_save
-    
+    l
 
     # get new filename
     start_date = all_tweets[0][0]
     start_date = datetime.strftime(datetime.strptime(start_date,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
-    start_date = date.replace(' ', '_').replace(':','-')
+    start_date = start_date.replace(' ', '_').replace(':','-')
 
     end_date = all_tweets[-1][0]
     end_date = datetime.strftime(datetime.strptime(end_date,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
-    end_date = date.replace(' ', '_').replace(':','-')
+    end_date = end_date.replace(' ', '_').replace(':','-')
 
 
     new_filename = start_date + '--' + end_date + '.pickle'
