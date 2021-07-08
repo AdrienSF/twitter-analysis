@@ -30,7 +30,7 @@ def pickle_tweets(filenames: list):
             to_save.append((date, ttext))
 
         all_tweets = all_tweets + to_save
-    l
+
 
     # get new filename
     start_date = all_tweets[0][0]
