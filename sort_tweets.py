@@ -37,7 +37,9 @@ def sort_tweets(filenames: list):
 
     # sort tweets by date(first of tuple)
     log('sorting...')
-    all_tweets = sorted(all_tweets, key=lambda tweet: tweet[0])
+    # all_tweets = sorted(all_tweets, key=lambda tweet: tweet[0])
+    # sort in place
+    all_tweets.sort(key=lambda tweet: tweet[0])
     gc.collect()
     log('done')
 
