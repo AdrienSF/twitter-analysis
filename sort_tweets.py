@@ -23,25 +23,25 @@ def sort_tweets(filenames: list):
         with open(filename, 'rb') as f:
             all_tweets = all_tweets + pickle.load(f)
 
-        print('loaded files:', i)
-        print('mem:', str(h.heap().size))
+        log('loaded files: '+ str(i))
+        log('mem:'+ str(h.heap().size))
 
 
-    print('total tweets:', len(all_tweets))
+    log('total tweets:'+ str(len(all_tweets)))
 
     # change each date str to a date object
-    print('changing tweet date str to datetime obj...')
+    log('changing tweet date str to datetime obj...')
     all_tweets = [ (datetime.strptime(tweet[0],'%a %b %d %H:%M:%S +0000 %Y'), tweet[1]) for tweet in all_tweets ]
     gc.collect()
-    print(done)
+    log('done')
 
     # sort tweets by date(first of tuple)
-    print('sorting...')
+    log('sorting...')
     all_tweets = sorted(all_tweets, key=lambda tweet: tweet[0])
     gc.collect()
-    print('done')
+    log('done')
 
-    print('saving chunks...')
+    log('saving chunks...')
     while all_tweets:
         # split tweets into week long chunks
         chunk = [all_tweets.pop(0)]
