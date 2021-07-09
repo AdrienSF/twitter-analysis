@@ -3,7 +3,7 @@
 # sort every file individually, rename the files to correct bounds
 
 
-# never mind, I think it can all fit into mem?
+# never mind, I think it can all fit into mem?... nope
 
 from multiprocessing import Process
 import pickle
@@ -67,9 +67,11 @@ def sort_tweets(filenames: list):
 
 
 
-# use 8 processes to clean all the data
+
 all_filenames = os.listdir('clean_data')
 all_filenames = [ 'clean_data/'+filename for filename in all_filenames ]
-
-sort_tweets(all_filenames)
+# let's hope this ends up in order...
+sort_tweets(all_filenames[:125])
+sort_tweets(all_filenames[125:250])
+sort_tweets(all_filenames[250:])
 
