@@ -6,6 +6,7 @@
 # never mind, I think it can all fit into mem?... nope
 
 from multiprocessing import Process
+from collections import deque
 import pickle
 from datetime import datetime, timedelta
 import os, json, gc
@@ -42,13 +43,16 @@ def sort_tweets(filenames: list):
     all_tweets.sort(key=lambda tweet: tweet[0])
     gc.collect()
     log('done')
+    log('converting to deque...')
+    all_tweets = deque(all_tweets)
+    gc.collect()
 
     log('saving chunks...')
     while all_tweets:
         # split tweets into week long chunks
-        chunk = [all_tweets.pop(0)]
+        chunk = [all_tweets.popleft()]
         while chunk[-1][0] < chunk[0][0] + timedelta(days=7) and all_tweets:
-            chunk.append(all_tweets.pop(0))
+            chunk.append(all_tweets.popleft())
 
         # get new filename
         start_date = chunk[0][0]
