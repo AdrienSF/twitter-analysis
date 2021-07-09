@@ -7,7 +7,7 @@
 
 from multiprocessing import Process
 import pickle
-from datetime import datetime
+from datetime import datetime, timedelta
 import os, json, gc
 from guppy import hpy; h=hpy()
 
@@ -22,7 +22,7 @@ def sort_tweets(filenames: list):
         filename = filenames[i]
         with open(filename, 'rb') as f:
             all_tweets = all_tweets + pickle.load(f)
-
+        gc.collect()
         log('loaded files: '+ str(i))
         log('mem:'+ str(h.heap().size))
 
@@ -47,7 +47,7 @@ def sort_tweets(filenames: list):
     while all_tweets:
         # split tweets into week long chunks
         chunk = [all_tweets.pop(0)]
-        while chunk[-1][0] < chunk[0][0] + datetime.timedelta(days=7) and all_tweets:
+        while chunk[-1][0] < chunk[0][0] + timedelta(days=7) and all_tweets:
             chunk.append(all_tweets.pop(0))
 
         # get new filename
