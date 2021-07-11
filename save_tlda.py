@@ -173,4 +173,4 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
 
 
 
-save_tlda('clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle', n_topics=20, run_name='week1all')
+save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, run_name='week1all')
