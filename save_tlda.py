@@ -9,7 +9,7 @@ from datetime import date, datetime
 import nltk
 import scipy
 import tensorly as tl
-from guppy import hpy; h=hpy
+from guppy import hpy; h=hpy()
 from nltk import word_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import PorterStemmer, WordNetLemmatizer
