@@ -31,10 +31,10 @@ def sort_tweets(filenames: list):
     log('total tweets:'+ str(len(all_tweets)))
 
     # change each date str to a date object
-    log('changing tweet date str to datetime obj...')
-    all_tweets = [ (datetime.strptime(tweet[0],'%a %b %d %H:%M:%S +0000 %Y'), tweet[1]) for tweet in all_tweets ]
-    gc.collect()
-    log('done')
+#    log('changing tweet date str to datetime obj...')
+#    all_tweets = [ (datetime.strptime(tweet[0],'%a %b %d %H:%M:%S +0000 %Y'), tweet[1]) for tweet in all_tweets ]
+#    gc.collect()
+#    log('done')
 
     # sort tweets by date(first of tuple)
     log('sorting...')
@@ -72,10 +72,10 @@ def sort_tweets(filenames: list):
 
 
 
-all_filenames = os.listdir('clean_data')
+all_filenames = sorted(os.listdir('clean_data'))
 all_filenames = [ 'clean_data/'+filename for filename in all_filenames ]
 # let's hope this ends up in order...
-sort_tweets(all_filenames[:125])
-sort_tweets(all_filenames[125:250])
-sort_tweets(all_filenames[250:])
+sort_tweets(all_filenames[:25])
+sort_tweets(all_filenames[25:])
+#sort_tweets(all_filenames[250:])
 
