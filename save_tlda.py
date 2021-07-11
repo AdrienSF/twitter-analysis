@@ -48,7 +48,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     tweets = []
     for name in filenames:
         with open(name, 'rb') as f:
-            tweets.append(pickle.load(f)[1])
+            tweets = tweets + pickle.load(f)[:][1]
     n_samples = len(tweets)
     log('loaded tweets: ' + str(len(tweets)))
     log('load time: ' + str(time.time()-start))
@@ -169,3 +169,8 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
             t_n_indices   =t.factors_[k,:].argsort()[:-n_top_words - 1:-1]
             top_words_JST = np.vstack([top_words_JST, [i for i,v in countvec.vocabulary_.items() if v in t_n_indices]])
             log([i for i,v in countvec.vocabulary_.items() if v in t_n_indices])
+
+
+
+
+save_tlda('clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle', n_topics=20, run_name='week1all')
