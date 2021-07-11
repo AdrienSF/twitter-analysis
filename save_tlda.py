@@ -24,7 +24,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import cumulant_gradient
 import tensor_lda_util as tl_util
 import tlda_final
-from helpers import log
+from helpers import log, gtp
 from tlda_final import TLDA
 
 
