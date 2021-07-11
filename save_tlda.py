@@ -38,7 +38,7 @@ porter = PorterStemmer()
 
 ######### IMPORTS ########
 
-def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learning_rate=0.01):
+def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learning_rate=0.01, subsample_proportion=1):
 
     log('')
     log('STARTING RUN: ' + run_name)
@@ -55,9 +55,14 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     log('loaded tweets: ' + str(len(tweets)))
     log('load time: ' + str(time.time()-start))
     log('mem after load: ' + str(h.heap().size))
+    tweets = random.sample(tweets, int(n_samples*subsample_proportion))
+    log('sampled tweets: ' + str(len(tweets)))
+    gc.collect()
+    log('mem after gc: ' + str(h.heap().size))
     log(datetime.now())
 
     # VECTORIZE 
+    log('vectorizing (generating tweet mat)...')
     countvec = CountVectorizer(tokenizer=gtp,
                                     strip_accents = 'unicode', # works
                                     lowercase = True, # works
@@ -66,6 +71,8 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
                                     min_df = int(0.002*n_samples))
     tweet_mat = countvec.fit_transform(tweets)
     log('mem after gen tweet_mat: ' + str(h.heap().size))
+    # save word-id dictionary
+    np.save(run_name + '_id-word-map_' + str(date.today())+'.npy', np.array(countvec.get_feature_names()))
 
     # DATA MANIPULATION
     # center data and change data structure
@@ -94,6 +101,10 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     log('fitting pca')
     pca = PCA(n_topics, beta_0, 30000)
     pca.fit(centered_tweet_mat) # fits PCA to  data, gives W
+    # save pca to file (to have inverse transform)
+    with open(run_name + '_trained_PCA_' + str(date.today())+'.pickle', 'rb') as f:
+        pickle.dump(pca, f)
+
     log('whitening')
     whitened_tweet_mat = pca.transform(centered_tweet_mat) # produces a whitened words counts <W,x> for centered data x
     # save whitened for subsequent use
@@ -127,7 +138,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     now = datetime.now()
     log(now)
     # save trained tlda to file
-    with open(run_name + '_trained_TLDA_' + str(date.today()), 'rb') as f:
+    with open(run_name + '_trained_TLDA_' + str(date.today())+'.pickle', 'rb') as f:
         pickle.dump(t, f)
 
 
@@ -175,4 +186,4 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
 
 
 
-save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, run_name='week1all')
+save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, run_name='week1all', subsample_proportion=.1)
