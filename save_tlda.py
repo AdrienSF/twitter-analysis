@@ -19,6 +19,7 @@ from tensorly.decomposition import symmetric_parafac_power_iteration as sym_para
 from tensorly.tenalg import kronecker
 from tensorly.tenalg.core_tenalg.tensor_product import batched_tensor_dot
 from tensorly.testing import assert_array_almost_equal, assert_array_equal
+from sklearn.feature_extraction.text import CountVectorizer
 
 import cumulant_gradient
 import tensor_lda_util as tl_util
