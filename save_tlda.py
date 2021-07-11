@@ -22,7 +22,7 @@ from tensorly.testing import assert_array_almost_equal, assert_array_equal
 import cumulant_gradient
 import tensor_lda_util as tl_util
 import tlda_final
-from helpers import gtp, load_tweets, log
+from helpers import log
 from tlda_final import TLDA
 
 
