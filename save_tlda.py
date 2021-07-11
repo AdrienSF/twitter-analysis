@@ -49,7 +49,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     tweets = []
     for name in filenames:
         with open(name, 'rb') as f:
-            tweets = tweets + pickle.load(f)[:][1]
+            tweets = tweets + [t[1] for t in pickle.load(f)]
     n_samples = len(tweets)
     log('loaded tweets: ' + str(len(tweets)))
     log('load time: ' + str(time.time()-start))
