@@ -79,8 +79,11 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
                                     min_df = int(0.002*n_samples))
     tweet_mat = countvec.fit_transform(tweets)
     log('mem after gen tweet_mat: ' + str(h.heap().size))
+    log('dict size: ' + str(len(list(countvec.vocabulary_.items()))))
     # save word-id dictionary
-    np.save(run_name + '_id-word-map_' + str(date.today())+'.npy', np.array(countvec.get_feature_names()))
+    id_map = np.array(countvec.get_feature_names())
+    np.save(run_name + '_id-word-map_' + str(date.today())+'.npy', id_map)
+    log('saved id-word map size: ' + str(id_map.shape))
 
     # DATA MANIPULATION
     # center data and change data structure
@@ -194,4 +197,4 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
 
 
 
-save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, run_name='week1all', subsample_proportion=.1)
+save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, run_name='week1tenthsubsample', subsample_proportion=.1)
