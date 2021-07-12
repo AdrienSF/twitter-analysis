@@ -18,15 +18,21 @@ from tensorly import norm
 from tensorly.contrib.sparse.cp_tensor import cp_to_tensor
 from tensorly.decomposition import symmetric_parafac_power_iteration as sym_parafac
 from tensorly.tenalg import kronecker
+from tensorly.cp_tensor import cp_mode_dot
+import tensorly.tenalg as tnl
+from tensorly.tenalg.core_tenalg import tensor_dot, batched_tensor_dot, outer, inner
 from tensorly.tenalg.core_tenalg.tensor_product import batched_tensor_dot
 from tensorly.testing import assert_array_almost_equal, assert_array_equal
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import IncrementalPCA
+from scipy.stats import gamma
 
 import cumulant_gradient
 import tensor_lda_util as tl_util
 import tlda_final
 from helpers import log, gtp
 from tlda_final import TLDA
+from pca import PCA
 
 
 ## nltk downloads
