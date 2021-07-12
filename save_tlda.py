@@ -45,7 +45,7 @@ porter = PorterStemmer()
 
 ######### IMPORTS ########
 
-def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learning_rate=0.01, subsample_proportion=1):
+def save_tlda(filenames: list, n_topics: int, run_name: str, vocab: list, beta_0=.003, learning_rate=0.01, subsample_proportion=1):
 
     log('')
     log('STARTING RUN: ' + run_name)
@@ -75,9 +75,10 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
                                     strip_accents = 'unicode', # works
                                     lowercase = True, # works
                                     ngram_range = (1,2),
-                                    max_df = 0.5, # works
-                                    min_df = 100,
-                                    max_features=1000)
+                                    # max_df = 0.5, # works
+                                    # min_df = 100,
+                                    # max_features=1000)
+                                    vocabulary=vocab)
     tweet_mat = countvec.fit_transform(tweets)
     log('mem after gen tweet_mat: ' + str(h.heap().size))
     log('dict size: ' + str(len(list(countvec.vocabulary_.items()))))
@@ -197,5 +198,5 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
 
 
 
-
-save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, run_name='bigVocabCountVec', subsample_proportion=.1)
+vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + [gtp('#ChineseVirus')]
+save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, vocab=vocab, run_name='customVocabCountVec', subsample_proportion=.1)
