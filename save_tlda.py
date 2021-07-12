@@ -23,7 +23,7 @@ import tensorly.tenalg as tnl
 from tensorly.tenalg.core_tenalg import tensor_dot, batched_tensor_dot, outer, inner
 from tensorly.tenalg.core_tenalg.tensor_product import batched_tensor_dot
 from tensorly.testing import assert_array_almost_equal, assert_array_equal
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.decomposition import IncrementalPCA
 from scipy.stats import gamma
 
@@ -70,11 +70,12 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
 
     # VECTORIZE 
     log('vectorizing (generating tweet mat)...')
-    countvec = CountVectorizer(tokenizer=gtp,
+    # countvec = CountVectorizer(tokenizer=gtp,
+    countvec = TfidfVectorizer(tokenizer=gtp,
                                     strip_accents = 'unicode', # works
                                     lowercase = True, # works
                                     ngram_range = (1,2),
-                                    max_df = 0.4, # works
+                                    max_df = 0.5, # works
                                     min_df = int(0.002*n_samples))
     tweet_mat = countvec.fit_transform(tweets)
     log('mem after gen tweet_mat: ' + str(h.heap().size))
@@ -94,7 +95,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     gc.collect()
     log('mem after gc: ' + str(h.heap().size))
     M1 = tl.mean(tweet_tensor, axis=0)
-    centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #center the data using the first moment 
+    centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #PEAK MEM USAGE 
     log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
     del tweet_tensor
     gc.collect()
