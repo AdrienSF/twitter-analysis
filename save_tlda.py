@@ -109,7 +109,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     pca = PCA(n_topics, beta_0, 30000)
     pca.fit(centered_tweet_mat) # fits PCA to  data, gives W
     # save pca to file (to have inverse transform)
-    with open(run_name + '_trained_PCA_' + str(date.today())+'.pickle', 'rb') as f:
+    with open(run_name + '_trained_PCA_' + str(date.today())+'.pickle', 'wb') as f:
         pickle.dump(pca, f)
 
     log('whitening')
@@ -145,7 +145,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, beta_0=.003, learni
     now = datetime.now()
     log(now)
     # save trained tlda to file
-    with open(run_name + '_trained_TLDA_' + str(date.today())+'.pickle', 'rb') as f:
+    with open(run_name + '_trained_TLDA_' + str(date.today())+'.pickle', 'wb') as f:
         pickle.dump(t, f)
 
 
