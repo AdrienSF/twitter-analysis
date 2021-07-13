@@ -198,5 +198,5 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab: list, beta_0
 
 
 
-vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + [gtp('#ChineseVirus')]
+vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + gtp('#ChineseVirus')
 save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, vocab=vocab, run_name='customVocabCountVec', subsample_proportion=.1)
