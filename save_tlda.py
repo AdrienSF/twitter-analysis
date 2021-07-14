@@ -45,7 +45,7 @@ porter = PorterStemmer()
 
 ######### IMPORTS ########
 
-def save_tlda(filenames: list, n_topics: int, run_name: str, vocab: list, beta_0=.003, learning_rate=0.01, subsample_proportion=1):
+def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=.003, learning_rate=0.01, subsample_proportion=1):
 
     log('')
     log('STARTING RUN: ' + run_name)
@@ -71,14 +71,24 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab: list, beta_0
     # VECTORIZE 
     log('vectorizing (generating tweet mat)...')
     # countvec = TfidfVectorizer(tokenizer=gtp,
-    countvec = CountVectorizer(tokenizer=gtp,
-                                    strip_accents = 'unicode', # works
-                                    lowercase = True, # works
-                                    ngram_range = (1,2),
-                                    # max_df = 0.5, # works
-                                    # min_df = 100,
-                                    # max_features=1000)
-                                    vocabulary=vocab)
+    if vocab:
+        countvec = CountVectorizer(tokenizer=gtp,
+                                        strip_accents = 'unicode', # works
+                                        lowercase = True, # works
+                                        ngram_range = (1,2),
+                                        # max_df = 0.5, # works
+                                        # min_df = 100,
+                                        # max_features=1000)
+                                        vocabulary=vocab)
+    else:
+        countvec = CountVectorizer(tokenizer=gtp,
+                                        strip_accents = 'unicode', # works
+                                        lowercase = True, # works
+                                        ngram_range = (1,2),
+                                        max_df = 0.5, # works
+                                        min_df = 100,
+                                        max_features=1000)
+
     tweet_mat = countvec.fit_transform(tweets)
     log('mem after gen tweet_mat: ' + str(h.heap().size))
     log('dict size: ' + str(len(list(countvec.vocabulary_.items()))))
@@ -198,5 +208,6 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab: list, beta_0
 
 
 
-vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + gtp('#ChineseVirus')
-save_tlda(['clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'], n_topics=20, vocab=vocab, run_name='customVocabCountVec', subsample_proportion=.1)
+# vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + gtp('#ChineseVirus')
+save_tlda(['clean_data/2020-06-18_00-33-05--2020-06-25_19-36-09.pickle'], n_topics=20, vocab=None, run_name='midCountVec', subsample_proportion=.1)
+save_tlda(['clean_data/2020-08-14_21-46-37--2020-08-17_17-59-01.pickle'], n_topics=20, vocab=None, run_name='endCountVec', subsample_proportion=.1)
