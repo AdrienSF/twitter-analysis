@@ -1,66 +1,136 @@
 
-STARTING RUN: week1all
+STARTING RUN: week1tenthsubsample
 loading data...
-2021-07-12 11:03:03.626339
+2021-07-12 13:23:35.394397
 loaded tweets: 8946225
-load time: 21.73385524749756
-mem after load: 2760176766
+load time: 22.629809379577637
+mem after load: 2760177395
 sampled tweets: 894622
-mem after gc: 336818612
-2021-07-12 11:04:01.336740
+mem after gc: 336877368
+2021-07-12 13:24:31.743356
 vectorizing (generating tweet mat)...
-mem after gen tweet_mat: 997667583
-mem after gen sparse_tweet_mat: 997675919
-mem after gc: 988892235
-mem after gen tweet_tensor: 1085511531
-mem after gc: 1081932363
-mem after gen centered_tweet_mat: 1085512075
-mem after gc: 988892779
-2021-07-12 11:16:52.084720
+mem after gen tweet_mat: 988683007
+dict size: 51
+saved id-word map size: (51,)
+mem after gen sparse_tweet_mat: 988695119
+mem after gc: 988694575
+mem after gen tweet_tensor: 1079946139
+mem after gc: 1076366971
+mem after gen centered_tweet_mat: 1079946381
+mem after gc: 988694817
+2021-07-12 13:36:13.492809
 fitting pca
 whitening
-saved whitened data to week1all_whitened_tweet_mat_2021-07-12.npy
-mem after whitening: 1132036489
-2021-07-12 11:17:35.110661
-pca and whitening time: 0:00:43.025941
-mem after gc: 1128457409
-2021-07-12 11:17:58.489675
+saved whitened data to week1tenthsubsample_whitened_tweet_mat_2021-07-12.npy
+mem after whitening: 1131838629
+2021-07-12 13:36:48.573480
+pca and whitening time: 0:00:35.080671
+mem after gc: 1128259549
+2021-07-12 13:37:08.006135
 initializing tlda
-2021-07-12 11:17:58.567934
+2021-07-12 13:37:08.010346
 training tlda...
 trained
-mem after tlda fit: 1128462464
-2021-07-12 11:43:29.558563
+mem after tlda fit: 1128264604
+2021-07-12 14:03:44.860087
 unwhitening eigenvectors to get unscaled word-level factors...
 doing other things?################
 (20,)
-[9.67735560e-05 1.53978300e-04 1.36576044e-04 1.54032962e-04
- 7.89503905e-05 2.04954872e-04 1.54437543e-04 9.47373301e-05
- 2.17069458e-04 1.45315571e-04 1.20680229e-04 1.84897019e-04
- 2.70732960e-04 1.23146093e-04 1.00092457e-04 1.09258713e-04
- 1.70065187e-04 1.99873685e-04 2.02512233e-04 8.19153953e-05]
+[5.62070120e-05 2.00643144e-04 1.01159400e-04 1.31336242e-04
+ 1.30095533e-04 1.29538562e-04 9.98321754e-05 1.16981614e-04
+ 1.07712610e-04 2.19055252e-04 9.24234310e-05 2.16699741e-04
+ 1.46052145e-04 2.65799251e-04 8.10781389e-05 1.63025887e-04
+ 1.47426837e-04 3.01319431e-04 1.33500534e-04 1.60113060e-04]
 normalizing the factors?
-mem: 1128470073
+mem: 1128271733
 ###################################
-2021-07-12 11:44:03.590495
+2021-07-12 14:03:58.140747
 saved
 TOPICS:
-['death', 'lockdown', 'corona', 'pandem', 'go', 'test', 'busi', 'spread', 'week', 'work', 'virus', 'respons', 'want', 'thank', 'help', 'countri', 'state', 'govern', 'care', 'pandem http']
-['say', 'year', 'lockdown', 'health', 'corona', 'time', 'pandem', 'go', 'busi', 'news', 'work', 'right', 'virus', 'good', 'thank', 'think', 'pandem http', 'thing', 'live', 'coronavirus pandem']
-['coronavirus', 'death', 'china', 'year', 'lockdown', 'health', 'test', 'week', 'work', 'case', 'peopl', 'realdonaldtrump', 'report', 'countri', 'state', 'govern', 'care', 'think', 'die', 'need']
-['covid', 'coronavirus', 'lockdown', 'test', 'busi', 'coronavirus http', 'spread', 'week', 'work', 'peopl', 'patient', 'thank', 'help', 'countri', 'state', 'govern', 'die', 'world', 'covid http', 'live']
-['covid', 'coronavirus', 'know', 'china', 'corona', 'time', 'busi', 'coronavirus http', 'spread', 'work', 'virus', 'patient', 'like', 'thank', 'help', 'covid http', 'need', 'look', 'kill', 'coronavirus pandem']
-['coronavirus', 'death', 'know', 'china', 'come', 'presid', 'trump', 'time', 'coronavirus http', 'stay', 'home', 'american', 'right', 'case', 'respons', 'realdonaldtrump', 'report', 'want', 'countri', 'world']
-['covid', 'coronavirus', 'death', 'know', 'go', 'test', 'busi', 'coronavirus http', 'news', 'week', 'case', 'patient', 'like', 'report', 'want', 'thank', 'help', 'covid http', 'live', 'look']
-['know', 'china', 'come', 'presid', 'trump', 'time', 'go', 'american', 'right', 'respons', 'good', 'realdonaldtrump', 'want', 'countri', 'think', 'world', 'thing', 'need', 'look', 'kill']
-['death', 'say', 'year', 'lockdown', 'health', 'pandem', 'news', 'week', 'american', 'peopl', 'respons', 'good', 'like', 'report', 'countri', 'care', 'die', 'world', 'live', 'look']
-['covid', 'health', 'corona', 'presid', 'trump', 'pandem', 'busi', 'spread', 'american', 'work', 'case', 'virus', 'respons', 'patient', 'thank', 'help', 'pandem http', 'covid http', 'need', 'kill']
-['covid', 'say', 'china', 'year', 'health', 'corona', 'come', 'pandem', 'spread', 'news', 'virus', 'good', 'like', 'countri', 'pandem http', 'world', 'thing', 'live', 'look', 'coronavirus pandem']
-['know', 'corona', 'go', 'coronavirus http', 'spread', 'stay', 'home', 'news', 'right', 'virus', 'peopl', 'good', 'like', 'want', 'thank', 'care', 'thing', 'live', 'look', 'kill']
-['know', 'year', 'come', 'go', 'test', 'spread', 'american', 'right', 'virus', 'peopl', 'good', 'realdonaldtrump', 'want', 'countri', 'think', 'die', 'world', 'thing', 'live', 'kill']
-['covid', 'coronavirus', 'know', 'lockdown', 'health', 'time', 'pandem', 'test', 'busi', 'coronavirus http', 'stay', 'home', 'news', 'patient', 'thank', 'state', 'care', 'pandem http', 'covid http', 'coronavirus pandem']
-['coronavirus', 'death', 'year', 'corona', 'pandem', 'test', 'busi', 'coronavirus http', 'week', 'american', 'work', 'right', 'respons', 'good', 'thank', 'help', 'pandem http', 'die', 'thing', 'coronavirus pandem']
-['death', 'know', 'say', 'health', 'presid', 'trump', 'time', 'pandem', 'test', 'news', 'week', 'american', 'right', 'case', 'good', 'realdonaldtrump', 'report', 'thank', 'pandem http', 'coronavirus pandem']
-['year', 'lockdown', 'corona', 'presid', 'time', 'pandem', 'go', 'busi', 'spread', 'american', 'right', 'virus', 'respons', 'state', 'govern', 'pandem http', 'thing', 'live', 'kill', 'coronavirus pandem']
-['year', 'presid', 'trump', 'go', 'week', 'american', 'work', 'right', 'case', 'virus', 'respons', 'good', 'realdonaldtrump', 'like', 'want', 'think', 'thing', 'need', 'look', 'kill']
-['covid', 'coronavirus', 'say', 'time', 'test', 'coronavirus http', 'spread', 'week', 'case', 'peopl', 'respons', 'patient', 'like', 'report', 'state', 'govern', 'die', 'covid http', 'look', 'coronavirus pandem']
+['respons', 'say', 'right', 'know', 'thing', 'want', 'kill', 'help', 'think', 'china', 'countri', 'come', 'busi', 'year', 'test', 'realdonaldtrump', 'look', 'world', 'work', 'presid']
+['trump', 'coronavirus', 'peopl', 'state', 'virus', 'go', 'coronavirus http', 'die', 'kill', 'think', 'china', 'countri', 'test', 'time', 'realdonaldtrump', 'death', 'presid', 'lockdown', 'case', 'report']
+['coronavirus', 'say', 'peopl', 'state', 'virus', 'go', 'die', 'spread', 'thing', 'kill', 'govern', 'need', 'think', 'news', 'good', 'work', 'presid', 'case', 'report', 'corona']
+['trump', 'coronavirus', 'respons', 'covid', 'virus', 'go', 'know', 'patient', 'covid http', 'kill', 'think', 'china', 'busi', 'year', 'time', 'realdonaldtrump', 'like', 'look', 'death', 'work']
+['trump', 'respons', 'coronavirus http', 'care', 'home', 'help', 'govern', 'need', 'think', 'countri', 'busi', 'year', 'test', 'realdonaldtrump', 'like', 'look', 'world', 'death', 'presid', 'lockdown']
+['trump', 'pandem', 'peopl', 'state', 'virus', 'go', 'thing', 'kill', 'need', 'countri', 'year', 'time', 'realdonaldtrump', 'like', 'look', 'coronavirus pandem', 'presid', 'pandem http', 'case', 'report']
+['trump', 'covid', 'virus', 'know', 'spread', 'kill', 'need', 'think', 'china', 'countri', 'come', 'news', 'test', 'good', 'realdonaldtrump', 'world', 'death', 'work', 'report', 'corona']
+['coronavirus', 'covid', 'peopl', 'coronavirus http', 'patient', 'spread', 'covid http', 'help', 'china', 'countri', 'busi', 'test', 'like', 'look', 'world', 'work', 'health', 'lockdown', 'case', 'report']
+['coronavirus', 'pandem', 'state', 'go', 'coronavirus http', 'die', 'live', 'home', 'govern', 'think', 'countri', 'year', 'test', 'realdonaldtrump', 'death', 'coronavirus pandem', 'pandem http', 'lockdown', 'case', 'report']
+['covid', 'state', 'virus', 'coronavirus http', 'care', 'live', 'patient', 'home', 'spread', 'covid http', 'govern', 'busi', 'news', 'year', 'good', 'world', 'stay', 'health', 'lockdown', 'corona']
+['respons', 'covid', 'pandem', 'peopl', 'state', 'coronavirus http', 'patient', 'covid http', 'china', 'countri', 'busi', 'time', 'like', 'look', 'death', 'coronavirus pandem', 'health', 'pandem http', 'case', 'report']
+['trump', 'say', 'covid', 'virus', 'live', 'know', 'patient', 'spread', 'covid http', 'want', 'help', 'china', 'countri', 'test', 'world', 'death', 'work', 'health', 'lockdown', 'corona']
+['respons', 'pandem', 'peopl', 'care', 'die', 'live', 'patient', 'home', 'need', 'countri', 'busi', 'year', 'time', 'world', 'death', 'coronavirus pandem', 'work', 'stay', 'health', 'pandem http']
+['peopl', 'state', 'virus', 'go', 'right', 'care', 'die', 'home', 'spread', 'thing', 'want', 'kill', 'govern', 'come', 'year', 'look', 'stay', 'presid', 'lockdown', 'corona']
+['pandem', 'state', 'go', 'right', 'know', 'thing', 'want', 'govern', 'think', 'china', 'come', 'news', 'year', 'good', 'like', 'look', 'pandem http', 'lockdown', 'case', 'report']
+['coronavirus', 'peopl', 'state', 'virus', 'go', 'coronavirus http', 'care', 'die', 'know', 'spread', 'govern', 'need', 'busi', 'coronavirus pandem', 'health', 'pandem http', 'lockdown', 'case', 'report', 'corona']
+['trump', 'respons', 'say', 'covid', 'state', 'patient', 'covid http', 'need', 'countri', 'news', 'test', 'realdonaldtrump', 'like', 'look', 'death', 'work', 'presid', 'health', 'lockdown', 'report']
+['respons', 'say', 'pandem', 'go', 'coronavirus http', 'care', 'die', 'live', 'patient', 'home', 'covid http', 'come', 'year', 'test', 'world', 'coronavirus pandem', 'work', 'stay', 'health', 'pandem http']
+['trump', 'coronavirus', 'respons', 'virus', 'care', 'patient', 'kill', 'govern', 'think', 'china', 'countri', 'busi', 'test', 'realdonaldtrump', 'death', 'work', 'presid', 'lockdown', 'case', 'report']
+
+STARTING RUN: bigVocabCountVec
+loading data...
+2021-07-12 14:15:37.368795
+loaded tweets: 8946225
+load time: 25.100712060928345
+mem after load: 2760177868
+sampled tweets: 894622
+mem after gc: 336957507
+2021-07-12 14:16:58.609813
+vectorizing (generating tweet mat)...
+mem after gen tweet_mat: 988967972
+dict size: 1000
+saved id-word map size: (1000,)
+mem after gen sparse_tweet_mat: 989056412
+mem after gc: 989055660
+mem after gen tweet_tensor: 2778299780
+mem after gc: 2774720584
+mem after gen centered_tweet_mat: 2778302048
+mem after gc: 989057928
+2021-07-12 14:33:28.429557
+fitting pca
+whitening
+saved whitened data to bigVocabCountVec_whitened_tweet_mat_2021-07-12.npy
+mem after whitening: 1132216790
+2021-07-12 15:51:12.596607
+pca and whitening time: 1:17:44.167050
+mem after gc: 1128637710
+2021-07-12 15:51:33.942154
+initializing tlda
+2021-07-12 15:51:33.943761
+training tlda...
+trained
+mem after tlda fit: 1128642765
+2021-07-12 16:09:44.069532
+unwhitening eigenvectors to get unscaled word-level factors...
+doing other things?################
+(20,)
+[2.68570820e-04 1.02067730e-04 2.37816200e-04 1.78259849e-04
+ 1.15859395e-04 7.76942106e-05 4.93078015e-05 8.25632884e-05
+ 1.03624714e-04 1.72714591e-04 1.73210624e-04 3.05290823e-04
+ 1.86229818e-04 8.91685600e-05 9.37028944e-05 1.30958327e-04
+ 2.40718933e-04 1.76453237e-04 1.20611755e-04 9.51764279e-05]
+normalizing the factors?
+mem: 1128801734
+###################################
+2021-07-12 16:09:59.875498
+saved
+TOPICS:
+['time', 'long', 'sens', 'sick', 'love', 'wast', 'tweet', 'damn', 'fuck', 'wish', 'spend', 'shit', 'wait', 'gonna', 'absolut', 'interest', 'sorri', 'time http', 'nice', 'guy']
+['california', 'covid death', 'caus', 'long', 'think', 'lockdown', 'die covid', 'arrest', 'economi', 'york', 'europ', 'covid lockdown', 'lockdown http', 'cashless', 'cashless societi', 'rat', 'nurs home', 'itali', 'care home', 'spain']
+['cancel', 'suggest', 'coronavirus http', 'video', 'press', 'inject', 'lysol', 'amid coronavirus', 'disinfect', 'inject disinfect', 'warn', 'bleach', 'cure', 'speak', 'bibl', 'youtub', 'cure coronavirus', 'kill coronavirus', 'coronavirus respons', 'trump say']
+['year', 'go', 'doctor', 'know', 'treatment', 'week', 'scientist', 'month', 'season', 'hear', 'head', 'pass', 'futur', 'speak', 'light', 'cashless', 'societi', 'cashless societi', 'scienc', 'bibl']
+['look', 'like', 'look like', 'read', 'great', 'time', 'feel', 'book', 'know', 'stori', 'sound', 'love', 'hear', 'thing', 'spend', 'worth', 'speak', 'time http', 'littl', 'difficult']
+['covid', 'covid pandem', 'join', 'challeng', 'coronavirus covid', 'share', 'visit', 'communiti', 'covid_', 'impact', 'industri', 'covid http', 'onlin', 'relief', 'covid coronavirus', 'http http', 'learn', 'resourc', 'fight covid', 'launch']
+['respons', 'econom', 'health', 'issu', 'give', 'leadership', 'experi', 'problem', 'expert', 'action', 'general', 'public', 'public health', 'organ', 'interest', 'mental', 'respond', 'mental health', 'power', 'trust']
+['eas', 'restrict', 'work', 'vaccin', 'outbreak', 'good', 'return', 'news http', 'lockdown', 'bori', 'johnson', 'coronavirus lockdown', 'lift', 'updat http', 'coronavirus crisi', 'lockdown http', 'coronavirus outbreak', 'trial', 'latest', 'live updat']
+['safe', 'china', 'help', 'order', 'home', 'stick', 'love', 'friend', 'stay', 'stay home', 'rich', 'bank', 'bless', 'stay safe', 'trade', 'buy', 'sell', 'flight', 'amaz', 'spread coronavirus']
+['work', 'ramadan', 'allah', 'face', 'miss', 'life', 'coronavirus lockdown', 'muslim', 'street', 'tech', 'prayer', 'lockdown http', 'fear', 'amaz', 'hero', 'youtub', 'happi', 'music', 'face mask', 'beauti']
+['say', 'increas', 'emerg', 'communiti', 'provid', 'receiv', 'local', 'say http', 'contact', 'govt', 'ensur', 'counti', 'reopen', 'depart', 'addit', 'servic', 'minist', 'avail', 'announc', 'centr']
+['death', 'suggest', 'covid death', 'caus', 'count', 'coronavirus death', 'disinfect', 'trump suggest', 'inject disinfect', 'remov', 'maga', 'bleach', 'death rate', 'light', 'vietnam', 'death http', 'toll', 'death toll', 'higher', 'youtub']
+['free', 'govern', 'help', 'medic', 'understand', 'health', 'provid', 'need', 'care', 'includ', 'money', 'fund', 'public', 'public health', 'popul', 'mental', 'larg', 'small', 'mental health', 'health care']
+['report', 'like', 'peopl', 'daili', 'blood', 'corona', 'corona virus', 'kill peopl', 'die', 'total', 'recov', 'sound', 'number', 'infect', 'peopl die', 'symptom', 'sar', 'confirm', 'coronavirus updat', 'stroke']
+['post', 'news', 'good', 'spread', 'watch', 'follow', 'live', 'news http', 'media', 'news coronavirus', 'polit', 'claim', 'lockdown', 'stop', 'fake', 'fake news', 'break', 'anti', 'lockdown http', 'host']
+['hope', 'mask', 'safe', 'chang', 'help', 'busi', 'support', 'kid', 'food', 'thank', 'need', 'famili', 'fight', 'friend', 'hand', 'surviv', 'messag', 'small', 'small busi', 'appreci']
+['pandem', 'pandem http', 'china', 'order', 'russia', 'send', 'unemploy', 'push', 'campaign', 'investig', 'highest', 'trade', 'ralli', 'debt', 'sell', 'travel', 'team', 'golf', 'incompet', 'depress']
+['case', 'coronavirus case', 'corona', 'corona virus', 'total', 'recov', 'covid case', 'covid http', 'case http', 'confirm', 'confirm case', 'recoveri', 'activ', 'case death', 'covid virus', 'itali', 'case covid', 'africa', 'fight covid', 'case coronavirus']
+['look', 'like', 'come', 'close', 'feel', 'want', 'start', 'see', 'right', 'global', 'make', 'bring', 'happen', 'mean', 'thing', 'stop', 'economi', 'stand', 'deal', 'place']
