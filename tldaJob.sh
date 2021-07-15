@@ -2,7 +2,7 @@
 
 #SBATCH --mem=32GB
 #SBATCH --partition=cpu-long.q
-#SBATCH --nodes=4
+#SBATCH --nodes=6
 #SBATCH --time=5-00:00:00
 #SBATCH --job-name=TLDAlloc
 #SBATCH --error=job.%J.err
