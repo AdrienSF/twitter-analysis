@@ -103,34 +103,59 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
     log('mem after gen sparse_tweet_mat: ' + str(h.heap().size))
     del tweet_mat
     gc.collect()
-    log('mem after gc: ' + str(h.heap().size))
-    tweet_tensor = tl.tensor(sparse_tweet_mat.toarray(),dtype=np.float16)
-    log('mem after gen tweet_tensor: ' + str(h.heap().size))
-    del sparse_tweet_mat
-    gc.collect()
-    log('mem after gc: ' + str(h.heap().size))
-    M1 = tl.mean(tweet_tensor, axis=0)
-    centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #PEAK MEM USAGE 
-    log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
-    del tweet_tensor
-    gc.collect()
-    log('mem after gc: ' + str(h.heap().size))
 
-    # PCA
-    start = datetime.now()
-    log(start)
-    batch_size = int(n_samples/20)
-    verbose = True
-    log('fitting pca')
+    # the following is a memory bottleneck that I need to complete in parts as I only have access to 32G RAM max
+    # split the data into how many chunks? 1000?
+
+    thousndth = int(sparse_tweet_mat.shape[0]/1000)
     pca = PCA(n_topics, beta_0, 30000)
-    pca.fit(centered_tweet_mat) # fits PCA to  data, gives W
+    for i in range(1000):
+        log('FITTING PCA: '+ str(i))
+        sparse_tweet_chunk = sparse_tweet_mat[i*thousndth:(i+1)*thousndth]
+        log('mem after gc: ' + str(h.heap().size))
+        tweet_tensor = tl.tensor(sparse_tweet_chunk.toarray(),dtype=np.float16)
+        log('mem after gen tweet_tensor: ' + str(h.heap().size))
+        # del sparse_tweet_chunk
+        gc.collect()
+        log('mem after gc: ' + str(h.heap().size))
+        M1 = tl.mean(tweet_tensor, axis=0)
+        centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #PEAK MEM USAGE 
+        log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
+        del tweet_tensor
+        gc.collect()
+        log('mem after gc: ' + str(h.heap().size))
+
+        # PCA fit
+        start = datetime.now()
+        log(start)
+        log('fitting pca')
+        pca.partial_fit(centered_tweet_mat) # fits PCA to  data, gives W
+    # pca has now been fit incrementally
     # save pca to file (to have inverse transform)
     with open(run_name + '_trained_PCA_' + str(date.today())+'.pickle', 'wb') as f:
         pickle.dump(pca, f)
 
-    log('whitening')
-    whitened_tweet_mat = pca.transform(centered_tweet_mat) # produces a whitened words counts <W,x> for centered data x
+    # PCA transform
+    whitened_tweet_mats = []
+    for sparse_tweet_chunk in chunks:
+        LOG('PCA TRANSFORM')
+        log('mem after gc: ' + str(h.heap().size))
+        tweet_tensor = tl.tensor(sparse_tweet_chunk.toarray(),dtype=np.float16)
+        log('mem after gen tweet_tensor: ' + str(h.heap().size))
+        # del sparse_tweet_chunk
+        gc.collect()
+        log('mem after gc: ' + str(h.heap().size))
+        M1 = tl.mean(tweet_tensor, axis=0)
+        centered_tweet_mat = scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16) #PEAK MEM USAGE 
+        log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
+        del tweet_tensor
+        gc.collect()
+        log('mem after gc: ' + str(h.heap().size))
+
+        log('whitening')
+        whitened_tweet_mats.append(pca.transform(centered_tweet_mat)) # produces a whitened words counts <W,x> for centered data x
     # save whitened for subsequent use
+    whitened_tweet_mat = np.concatenate(whitened_tweet_mats, axis=0)
     filename = run_name + '_whitened_tweet_mat_' + str(date.today()) + '.npy'
     np.save(filename, whitened_tweet_mat, allow_pickle=False)
     log('saved whitened data to ' + filename)
@@ -144,6 +169,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
     log('mem after gc: ' + str(h.heap().size))
 
 
+    # I think TLDA doesn't have more than constant memory spike?
     # TLDA
     now = datetime.now()
     log(now)
