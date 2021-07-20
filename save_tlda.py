@@ -113,9 +113,9 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
         sparse_tweet_chunk = sparse_tweet_mat[i*fivehundredth:(i+1)*fivehundredth]
         gc.collect()
         log('mem after gc: ' + str(h.heap().size))
-        tweet_tensor = tl.tensor(sparse_tweet_mat.toarray(),dtype=np.float16)
+        tweet_tensor = tl.tensor(sparse_tweet_chunk.toarray(),dtype=np.float16)
         log('mem after gen tweet_tensor: ' + str(h.heap().size))
-        del sparse_tweet_mat
+        del sparse_tweet_chunk
         gc.collect()
         log('mem after gc: ' + str(h.heap().size))
         M1 = tl.mean(tweet_tensor, axis=0)
