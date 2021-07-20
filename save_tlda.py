@@ -106,7 +106,8 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
 
     # the following is a memory bottleneck that I need to complete in parts as I only have access to 32G RAM max
     # the problem is, doing this in parts will not be logically equivalent to all at once, and I'm not sure how this impacts the rest of the script
-    centered_tweet_mats = []
+    centeredcentered_tweet_mat_tweet_mats = []
+    M1 = sparse_tweet_mat.mean(axis=0)
     fivehundredth = int(sparse_tweet_mat.shape[0]/500)
     for i in range(501):
         log('CENTERING CHUNK: ' + str(i))
@@ -118,7 +119,6 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
         del sparse_tweet_chunk
         gc.collect()
         log('mem after gc: ' + str(h.heap().size))
-        M1 = tl.mean(tweet_tensor, axis=0)
         centered_tweet_mats.append(scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16)) #PEAK MEM USAGE 
         log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
         del tweet_tensor
@@ -126,7 +126,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
         log('mem after gc: ' + str(h.heap().size))
 
     log('vstacking')
-    centered_tweet_mats = scipy.sparse.vstack(centered_tweet_mats, format='csr')
+    centered_tweet_mat = scipy.sparse.vstack(centered_tweet_mats, format='csr')
 
     # PCA
     start = datetime.now()
