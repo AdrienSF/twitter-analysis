@@ -3,7 +3,7 @@
 #SBATCH --partition=gpuq
 #SBATCH --nodes=1
 #SBATCH --time=0-4:00:00
-#SBATCH --job-name=complexity_measure
+#SBATCH --job-name=tlda
 #SBATCH --error=job.%J.err
 #SBATCH --output=job.%J.out
 

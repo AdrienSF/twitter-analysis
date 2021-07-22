@@ -21,7 +21,7 @@ tl.set_backend('cupy')
 import os
 import pickle
 import pandas as pd
-from helpers import load_tweets
+# from helpers import load_tweets
 # all_tweets = load_tweets(filenames, preprocessor=None)
 
 
