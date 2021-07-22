@@ -18,7 +18,7 @@ tl.set_backend('cupy')
 
 
 # load tweets
-import os
+import os, gc
 import pickle
 import pandas as pd
 # from helpers import load_tweets
