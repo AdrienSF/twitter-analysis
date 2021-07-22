@@ -64,8 +64,8 @@ print('getting mean...')
 M1 = dtm_sent.mean(axis=0)
 print('centering...')
 centered = []
-frac = int(dtm_sent.shape[0]/100)
-for i in range(101):
+frac = int(dtm_sent.shape[0]/500)
+for i in range(501):
     centered.append(cupyx.scipy.sparse.csr_matrix(dtm_sent[i*frac:(i+1)*frac] - M1)) #mem spike
 
 del dtm
