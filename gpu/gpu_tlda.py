@@ -64,8 +64,8 @@ a = tl.tensor(dtm_sent.toarray(),dtype=cp.float16)
 M1 = tl.mean(a, axis=0)
 print('centering...')
 centered = []
-frac = int(dtm.shape[0]/100)
-for i in range(101):
+frac = int(dtm.shape[0]/500)
+for i in range(501):
     centered.append(cupyx.scipy.sparse.csr_matrix(dtm[i*frac:(i+1)*frac] - M1)) #mem spike
 
 del dtm
