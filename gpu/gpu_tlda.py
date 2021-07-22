@@ -4,6 +4,7 @@ from datetime import datetime
 import cudf
 import cuml
 # import numpy as np
+from cuml.decomposition import IncrementalPCA
 import cupyx
 from cuml.feature_extraction.text import HashingVectorizer
 from cuml.feature_extraction.text import CountVectorizer
@@ -58,26 +59,6 @@ print('vectorizing...')
 dtm = vec.fit_transform(tweets)
 print('converting to cupy...')
 dtm_sent = cupyx.scipy.sparse.csr_matrix(dtm)
-del dtm
-gc.collect()
-print('getting mean...')
-M1 = dtm_sent.mean(axis=0)
-print('centering...')
-centered = []
-frac = int(dtm_sent.shape[0]/500)
-for i in range(501):
-    print(i)
-    centered.append(cupyx.scipy.sparse.csr_matrix(dtm_sent[i*frac:(i+1)*frac] - M1)) #mem spike
-
-del dtm
-gc.collect()
-
-x_cent = cupyx.scipy.sparse.vstack(centered, format='csr')
- 
-
-
-
-from cuml.decomposition import IncrementalPCA
 start = datetime.now()
 print("now =", start)
 
@@ -89,13 +70,43 @@ n_topic =  20
 beta_0=0.003
 
 pca = IncrementalPCA(n_components = n_topic, batch_size=batch_size, whiten=True)
-print('fitting pca...')
-pca.fit(x_cent) # fits PCA to  data, gives W
-print('pca transforming data...')
-x_whit = pca.transform(x_cent) # produces a whitened words counts <W,x> for centered data x
+del dtm
+gc.collect()
+print('getting mean...')
+M1 = dtm_sent.mean(axis=0)
+print('centering, fit pca...')
+centered = []
+frac = int(dtm_sent.shape[0]/100)
+for i in range(101):
+    gc.collect()
+    print(i)
+    centered_chunk = cupyx.scipy.sparse.csr_matrix(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
+
+    print('fitting pca...')
+    pca.partial_fit(centered_chunk) # fits PCA to  data, gives W
+    print('pca transforming data...')
+
+print("now =", now)
+print('centering, transform pca...')
+whitened = []
+for i in range(101):
+    gc.collect()
+    print(i)
+    centered_chunk = cupyx.scipy.sparse.csr_matrix(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
+
+    whitened.append(pca.transform(centered_chunk)) # produces a whitened words counts <W,x> for centered data x
+
+whitened = cupy.vstack(whitened)
 now = datetime.now()
 print("now =", now)
-pca_time = now - start 
+ 
+
+# del dtm
+# gc.collect()
+
+# x_cent = cupyx.scipy.sparse.vstack(centered, format='csr')
+
+
 
 print("x_whit", x_whit.shape)
 
