@@ -39,7 +39,7 @@ print('subsanmpling...')
 import random
 # use only 100000 tweets
 all_tweets = list(df['tweet'].values)
-tweets = random.sample(all_tweets, 1000000) #mem runs out at 1M
+tweets = random.sample(all_tweets, 100000) #mem runs out at 1M
 # tweets = all_tweets
 
 tweets = cudf.Series(tweets)
@@ -80,11 +80,13 @@ frac = int(dtm_sent.shape[0]/100)
 for i in range(101):
     gc.collect()
     print(i)
-    centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
+    if i == 100:
+        centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
+    else:
+        centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
 
-    print('fitting pca...')
+    # print('fitting pca...')
     pca.partial_fit(centered_chunk) # fits PCA to  data, gives W
-    print('pca transforming data...')
 
 print("now =", now)
 print('centering, transform pca...')
@@ -92,7 +94,10 @@ whitened = []
 for i in range(101):
     gc.collect()
     print(i)
-    centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
+    if i == 100:
+        centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
+    else:
+        centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
 
     whitened.append(pca.transform(centered_chunk)) # produces a whitened words counts <W,x> for centered data x
 
