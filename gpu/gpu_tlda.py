@@ -66,6 +66,7 @@ print('centering...')
 centered = []
 frac = int(dtm_sent.shape[0]/500)
 for i in range(501):
+    print(i)
     centered.append(cupyx.scipy.sparse.csr_matrix(dtm_sent[i*frac:(i+1)*frac] - M1)) #mem spike
 
 del dtm
