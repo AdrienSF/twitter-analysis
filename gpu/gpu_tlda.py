@@ -62,6 +62,8 @@ dtm_sent = cupyx.scipy.sparse.csr_matrix(dtm)
 print('converting to tensor...')
 a = tl.tensor(dtm_sent.toarray(),dtype=cp.float16)
 M1 = tl.mean(a, axis=0)
+del a
+gc.collect()
 print('centering...')
 centered = []
 frac = int(dtm.shape[0]/500)
