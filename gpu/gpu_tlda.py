@@ -90,7 +90,7 @@ for i in range(101):
     # print('fitting pca...')
     pca.partial_fit(centered_chunk) # fits PCA to  data, gives W
 
-print("now =", now)
+print("now =", datetime.now())
 print('centering, transform pca...')
 whitened = []
 for i in range(101):
@@ -106,8 +106,7 @@ for i in range(101):
     whitened.append(pca.transform(centered_chunk)) # produces a whitened words counts <W,x> for centered data x
 
 whitened = cp.vstack(whitened)
-now = datetime.now()
-print("now =", now)
+print("now =", datetime.now())
  
 
 # del dtm
