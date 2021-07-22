@@ -80,7 +80,7 @@ frac = int(dtm_sent.shape[0]/100)
 for i in range(101):
     gc.collect()
     print(i)
-    centered_chunk = cupyx.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
+    centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
 
     print('fitting pca...')
     pca.partial_fit(centered_chunk) # fits PCA to  data, gives W
@@ -92,11 +92,11 @@ whitened = []
 for i in range(101):
     gc.collect()
     print(i)
-    centered_chunk = cupyx.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
+    centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
 
     whitened.append(pca.transform(centered_chunk)) # produces a whitened words counts <W,x> for centered data x
 
-whitened = cupyx.vstack(whitened)
+whitened = cp.vstack(whitened)
 now = datetime.now()
 print("now =", now)
  
