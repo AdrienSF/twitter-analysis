@@ -65,19 +65,13 @@ print('centering...')
 x_cent = cupyx.scipy.sparse.csr_matrix(dtm - M1) #center the data using the first moment 
 
 
-batch_size = 240000
-verbose = True
-n_topic =  20
-
-beta_0=0.003
-
 
 from cuml.decomposition import IncrementalPCA
 start = datetime.now()
 print("now =", start)
 
 
-batch_size = 240000
+batch_size = 30000
 verbose = True
 n_topic =  20
 
