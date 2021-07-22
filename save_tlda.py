@@ -105,7 +105,6 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
     gc.collect()
 
     # the following is a memory bottleneck that I need to complete in parts as I only have access to 32G RAM max
-    # the problem is, doing this in parts will not be logically equivalent to all at once, and I'm not sure how this impacts the rest of the script
     centered_tweet_mats = []
     M1 = sparse_tweet_mat.mean(axis=0)
     fivehundredth = int(sparse_tweet_mat.shape[0]/500)

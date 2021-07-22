@@ -58,17 +58,15 @@ print('vectorizing...')
 dtm = vec.fit_transform(tweets)
 print('converting to cupy...')
 dtm_sent = cupyx.scipy.sparse.csr_matrix(dtm)
-
-print('converting to tensor...')
-a = tl.tensor(dtm_sent.toarray(),dtype=cp.float16)
-M1 = tl.mean(a, axis=0)
-del a
+del dtm
 gc.collect()
+print('getting mean...')
+M1 = dtm_sent.mean(axis=0)
 print('centering...')
 centered = []
 frac = int(dtm.shape[0]/500)
 for i in range(501):
-    centered.append(cupyx.scipy.sparse.csr_matrix(dtm[i*frac:(i+1)*frac] - M1)) #mem spike
+    centered.append(cupyx.scipy.sparse.csr_matrix(dtm_sent[i*frac:(i+1)*frac] - M1)) #mem spike
 
 del dtm
 gc.collect()
