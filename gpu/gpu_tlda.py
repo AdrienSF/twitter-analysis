@@ -38,8 +38,8 @@ print('subsanmpling...')
 import random
 # use only 100000 tweets
 all_tweets = list(df['tweet'].values)
-# tweets = random.sample(all_tweets, 100000)
-tweets = all_tweets
+tweets = random.sample(all_tweets, 1000000)
+# tweets = all_tweets
 
 tweets = cudf.Series(tweets)
 print("tweets shape", tweets.shape)
