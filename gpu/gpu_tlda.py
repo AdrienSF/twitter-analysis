@@ -49,8 +49,9 @@ n_samples = len(tweets)
 vec = CountVectorizer(stop_words='english',
                      lowercase = True, # works
                     ngram_range = (1,2),
-                    max_df = 0.4, # works
-                    min_df = int(0.002*n_samples))
+                    max_df = 0.5, # works
+                    min_df = 100,
+                    max_features=6000)
                     
 print('vectorizing...')
 
