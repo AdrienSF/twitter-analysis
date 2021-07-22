@@ -81,6 +81,8 @@ for i in range(101):
     gc.collect()
     print(i)
     if i == 100:
+        if i*frac == dtm_sent.shape[0]:
+            break
         centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
     else:
         centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
@@ -95,6 +97,8 @@ for i in range(101):
     gc.collect()
     print(i)
     if i == 100:
+        if i*frac == dtm_sent.shape[0]:
+            break
         centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
     else:
         centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
