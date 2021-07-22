@@ -1,8 +1,9 @@
-import numpy as np
+import cupy as cp
 import math
 from scipy.stats import gamma
 
 import tensorly as tl
+tl.set_backend('cupy')
 from cumulant_gradient import cumulant_gradient
 import tensor_lda_util as tl_util
 
@@ -20,7 +21,7 @@ class TLDA():
         self.gamma_shape = gamma_shape
         self.smoothing   = smoothing
         self.weights_ = tl.ones(self.n_topic*self.n_senti)
-        self.factors_ = tl.tensor(np.random.randn(self.n_topic, self.n_topic)/10000)
+        self.factors_ = tl.tensor(cp.random.randn(self.n_topic, self.n_topic)/10000)
 
     def partial_fit(self, X_batch, verbose = False):
         '''Update the factors directly from the batch using stochastic gradient descent
@@ -77,8 +78,8 @@ class TLDA():
 
 
         gammad = tl.tensor(gamma.rvs(self.gamma_shape, scale= 1.0/self.gamma_shape, size = n_cols)) # gamma dist. 
-        exp_elogthetad = tl.tensor(np.exp(tl_util.dirichlet_expectation(gammad)))
-        exp_elogbetad  = tl.tensor(np.array(adjusted_factor))
+        exp_elogthetad = tl.tensor(cp.exp(tl_util.dirichlet_expectation(gammad)))
+        exp_elogbetad  = tl.tensor(cp.array(adjusted_factor))
 
         phinorm = (tl.dot(exp_elogbetad, exp_elogthetad) + 1e-100)
         mean_gamma_change = 1.0
@@ -87,7 +88,7 @@ class TLDA():
         while (mean_gamma_change > 1e-2 and iter < self.n_iter_test):
             lastgamma = tl.copy(gammad)
             gammad = ((exp_elogthetad * (tl.dot(exp_elogbetad.T, doc / phinorm))) + self.weights_)
-            exp_elogthetad = tl.tensor(np.exp(tl_util.dirichlet_expectation(gammad)))
+            exp_elogthetad = tl.tensor(cp.exp(tl_util.dirichlet_expectation(gammad)))
             phinorm = (tl.dot(exp_elogbetad, exp_elogthetad) + 1e-100)
 
             mean_gamma_change = tl.sum(tl.abs(gammad - lastgamma)) / n_cols
@@ -122,17 +123,17 @@ class TLDA():
         adjusted_factor *= (1. - self.smoothing)
         adjusted_factor += (self.smoothing / adjusted_factor.shape[1])
 
-        adjusted_factor /= adjusted_factor.sum(axis=1)[:, np.newaxis]
+        adjusted_factor /= adjusted_factor.sum(axis=1)[:, cp.newaxis]
         
         
         if doc_predict == True:
 
-            gammad_l = (np.array([tl.to_numpy(self._predict_topic(doc, adjusted_factor,w_mat)) for doc in X_test]))
-            gammad_l = tl.tensor(np.nan_to_num(gammad_l))
+            gammad_l = (cp.array([tl.to_numpy(self._predict_topic(doc, adjusted_factor,w_mat)) for doc in X_test]))
+            gammad_l = tl.tensor(cp.nan_to_num(gammad_l))
 
             #normalize using exponential of dirichlet expectation
-            gammad_norm = tl.tensor(np.exp(np.array([tl_util.dirichlet_expectation(g) for g in gammad_l])))
-            gammad_norm2 = tl.tensor(np.array([row / np.sum(row) for row in gammad_norm]))
+            gammad_norm = tl.tensor(cp.exp(cp.array([tl_util.dirichlet_expectation(g) for g in gammad_l])))
+            gammad_norm2 = tl.tensor(cp.array([row / cp.sum(row) for row in gammad_norm]))
 
             return gammad_norm2, tl.transpose(adjusted_factor)
         else:
