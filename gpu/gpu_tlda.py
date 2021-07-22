@@ -116,7 +116,7 @@ print("now =", datetime.now())
 
 
 
-print("x_whit", x_whit.shape)
+print("whitened" , whitened. shape)
 
 
 
@@ -143,7 +143,7 @@ print("t.factors_.shape", t.factors_.shape)
 now = datetime.now()
 print('fitting tlda...')
 print("now =", now)
-t.fit(x_whit,verbose=True) # fit whitened wordcounts to get decomposition of M3 through SGD
+t.fit(whitened, verbose=True) # fit whitened wordcounts to get decomposition of M3 through SGD
 
 now = datetime.now()
 print("now =", now)
