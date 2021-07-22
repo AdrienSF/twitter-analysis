@@ -1,6 +1,6 @@
 import tensorly as tl
 # This should work with any backend
-# tl.set_backend('cupy')
+tl.set_backend('cupy')
 from tensorly.cp_tensor import cp_mode_dot
 import tensorly.tenalg as tnl
 from tensorly.tenalg.core_tenalg import tensor_dot, batched_tensor_dot, outer, inner
