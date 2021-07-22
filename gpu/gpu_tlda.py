@@ -38,7 +38,7 @@ print('subsanmpling...')
 import random
 # use only 100000 tweets
 all_tweets = list(df['tweet'].values)
-tweets = random.sample(all_tweets, 1000000)
+tweets = random.sample(all_tweets, 1000000) #mem runs out at 1M
 # tweets = all_tweets
 
 tweets = cudf.Series(tweets)
@@ -63,7 +63,16 @@ print('converting to tensor...')
 a = tl.tensor(dtm_sent.toarray(),dtype=cp.float16)
 M1 = tl.mean(a, axis=0)
 print('centering...')
-x_cent = cupyx.scipy.sparse.csr_matrix(dtm - M1) #center the data using the first moment 
+centered = []
+frac = int(dtm.shape[0]/100)
+for i in range(101):
+    centered.append(cupyx.scipy.sparse.csr_matrix(dtm[i*frac:(i+1)*frac] - M1)) #mem spike
+
+del dtm
+gc.collect()
+
+x_cent = cupyx.scipy.sparse.vstack(centered, format='csr')
+ 
 
 
 
