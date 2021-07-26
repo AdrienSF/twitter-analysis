@@ -14,3 +14,4 @@ conda activate rapids-0.19
 
 python3 gpu_tlda.py
 
+
