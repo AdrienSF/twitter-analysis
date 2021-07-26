@@ -167,7 +167,7 @@ t.factors_ = pca.inverse_transform(t.factors_)  # unwhiten the eigenvectors to g
 Recover alpha_hat from the eigenvalues of M3
 '''  
 
-eig_vals = [cp.linalg.norm(k,3) for k in t.factors_ ]
+eig_vals = cp.array([cp.linalg.norm(k,3) for k in t.factors_ ])
 # normalize beta
 alpha      = cp.power(eig_vals, -2)
 
