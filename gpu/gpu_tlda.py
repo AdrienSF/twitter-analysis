@@ -3,7 +3,7 @@
 from datetime import datetime
 import cudf
 import cuml
-# import numpy as np
+import numpy as np # for post processing, I can't be bothered to change to gpu optimized backend
 from cuml.decomposition import IncrementalPCA
 import cupyx
 from cuml.feature_extraction.text import HashingVectorizer
