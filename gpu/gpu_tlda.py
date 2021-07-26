@@ -25,6 +25,12 @@ import pandas as pd
 # from helpers import load_tweets
 # all_tweets = load_tweets(filenames, preprocessor=None)
 
+def log(message: str):
+    message = str(message)
+    with open('progress.log', 'a') as f:
+        f.write(message+'\n')
+
+
 
 print('loading pickle')
 filename = '../clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'
@@ -116,7 +122,7 @@ print("now =", datetime.now())
 
 
 
-print("whitened" , whitened. shape)
+print("whitened" , whitened.shape)
 
 
 
@@ -148,3 +154,37 @@ t.fit(whitened, verbose=True) # fit whitened wordcounts to get decomposition of 
 now = datetime.now()
 print("now =", now)
 print('DONE!')
+
+
+# EXTRACT and SAVE TOPICS
+id_map = vec.get_feature_names()
+
+
+
+t.factors_ = pca.reverse_transform(t.factors_)  # unwhiten the eigenvectors to get unscaled word-level factors
+
+''' 
+Recover alpha_hat from the eigenvalues of M3
+'''  
+
+eig_vals = [np.linalg.norm(k,3) for k in t.factors_ ]
+# normalize beta
+alpha      = np.power(eig_vals, -2)
+
+alpha_norm = (alpha / alpha.sum()) * beta_0
+t.alpha_   = alpha_norm
+        
+t.predict(whitened,w_mat=True,doc_predict=False)  # normalize the factors 
+
+
+# extract topics and correct weights
+probs = t.factors_
+
+probmaps = []
+for i in range(n_topic):
+    ids = probs[i,:].argsort()[:]
+    prob_dict = {id_map[word_id]: probs[i,word_id] for word_id in ids}
+    probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[0])))
+
+with open('week1subsample_distribution.pickle', 'rb') as f:
+    pickle.dump(probmaps, f)
