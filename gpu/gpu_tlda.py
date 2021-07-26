@@ -45,7 +45,7 @@ print('subsanmpling...')
 import random
 # use only 100000 tweets
 all_tweets = list(df['tweet'].values)
-tweets = random.sample(all_tweets, 1000000) #mem runs out at 1M
+tweets = random.sample(all_tweets, 100000) #mem runs out at 1M
 # tweets = all_tweets
 
 tweets = cudf.Series(tweets)
@@ -161,7 +161,7 @@ id_map = vec.get_feature_names()
 
 
 
-t.factors_ = pca.reverse_transform(t.factors_)  # unwhiten the eigenvectors to get unscaled word-level factors
+t.factors_ = pca.inverse_transform(t.factors_)  # unwhiten the eigenvectors to get unscaled word-level factors
 
 ''' 
 Recover alpha_hat from the eigenvalues of M3
