@@ -80,7 +80,6 @@ def save_distribution(filename, run_name):
     beta_0=0.003
 
     pca = IncrementalPCA(n_components = n_topic, batch_size=batch_size, whiten=True)
-    del dtm
     gc.collect()
     print('getting mean...')
     M1 = dtm_sent.mean(axis=0)
@@ -117,13 +116,6 @@ def save_distribution(filename, run_name):
 
     whitened = cp.vstack(whitened)
     print("now =", datetime.now())
-    
-
-    # del dtm
-    # gc.collect()
-
-    # x_cent = cupyx.scipy.sparse.vstack(centered, format='csr')
-
 
 
     print("whitened" , whitened.shape)
