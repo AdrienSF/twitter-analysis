@@ -45,8 +45,8 @@ print('subsanmpling...')
 import random
 # use only 100000 tweets
 all_tweets = list(df['tweet'].values)
-tweets = random.sample(all_tweets, 1000000) # problem using all data?
-# tweets = all_tweets
+#tweets = random.sample(all_tweets, 1000000) # problem using all data?
+tweets = all_tweets
 
 tweets = cudf.Series(tweets)
 print("tweets shape", tweets.shape)
@@ -186,5 +186,5 @@ for i in range(n_topic):
     prob_dict = {id_map[word_id]: probs[i,word_id] for word_id in ids}
     probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[0])))
 
-with open('week1subsample_distribution.pickle', 'wb') as f:
+with open('week1all_distribution.pickle', 'wb') as f:
     pickle.dump(probmaps, f)
