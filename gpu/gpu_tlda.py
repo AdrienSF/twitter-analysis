@@ -179,7 +179,7 @@ def save_distribution(filename, run_name):
     probmaps = []
     for i in range(n_topic):
         ids = probs[i,:].argsort()[:]
-        prob_dict = {id_map[word_id]: probs[i,word_id] for word_id in ids}
+        prob_dict = {id_map[word_id]: float(probs[i,word_id]) for word_id in ids}
         probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[0])))
 
     with open(run_name+'_distribution.p', 'wb') as f:
@@ -187,7 +187,9 @@ def save_distribution(filename, run_name):
 
 
 
-
-filename = '../clean_data/2020-04-22_23-55-53--2020-04-29_23-55-53.pickle'
-run_name = '5Mweek1'
-save_distribution(filename, run_name)
+filenames = sorted(os.listdir('../clean_data/'))
+filenames = ['../clean_data/' + fname for fname in filenames]
+for i in range(len(filenames)):
+    filename = filenames[i]
+    run_name = 'week' + str(i)
+    save_distribution(filename, run_name)
