@@ -44,7 +44,7 @@ def save_distribution(filename, run_name):
     import random
     all_tweets = list(df['tweet'].values)
     # problem using all data? try 5m
-    subsample_size = 4000000
+    subsample_size = 1000000
     if len(all_tweets) > subsample_size:
         tweets = random.sample(all_tweets, subsample_size)
     else:
