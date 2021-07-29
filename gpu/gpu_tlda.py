@@ -180,7 +180,7 @@ def save_distribution(filename, run_name):
     for i in range(n_topic):
         ids = probs[i,:].argsort()[:]
         prob_dict = {id_map[word_id]: float(probs[i,word_id]) for word_id in ids}
-        probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[0])))
+        probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[1])))
 
     with open(run_name+'_distribution.p', 'wb') as f:
         pickle.dump(probmaps, f)
