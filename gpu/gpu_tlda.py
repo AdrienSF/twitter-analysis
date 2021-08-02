@@ -187,9 +187,13 @@ def save_distribution(filename, run_name):
 
 
 
-filenames = sorted(os.listdir('../clean_data/'))
-filenames = ['../clean_data/' + fname for fname in filenames]
-for i in range(len(filenames)):
-    filename = filenames[i]
-    run_name = 'week' + str(i)
-    save_distribution(filename, run_name)
+# filenames = sorted(os.listdir('../clean_data/'))
+# filenames = ['../clean_data/' + fname for fname in filenames]
+# for i in range(len(filenames)):
+#     filename = filenames[i]
+#     run_name = 'week' + str(i)
+#     save_distribution(filename, run_name)
+
+# check for diff in same subsample
+for run_name in ['run_1', 'run_2']:
+    save_distribution('../week1test_subset.pickle', run_name)
