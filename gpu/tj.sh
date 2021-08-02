@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#SBATCH --partition=gpuq
+#SBATCH --partition=gpu-long.q
 #SBATCH --mem=64G
 #SBATCH --nodes=2
-#SBATCH --time=0-4:00:00
+#SBATCH --time=2-0:00:00
 #SBATCH --job-name=tlda
 #SBATCH --error=job.%J.err
 #SBATCH --output=job.%J.out
