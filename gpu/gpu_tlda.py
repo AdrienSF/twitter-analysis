@@ -73,7 +73,7 @@ def save_distribution(filename, run_name):
     del dtm
     gc.collect()
 
-    batch_size = 30000
+    batch_size = 30000 # increase batch size to 60 thousand
     verbose = True
     n_topic =  20
 
@@ -119,7 +119,11 @@ def save_distribution(filename, run_name):
 
 
     print("whitened" , whitened.shape)
-
+    with open(run_name + '_whitened.p', 'wb') as f:
+        pickle.save(whitened, f)
+# matrix comparison between runs, are they different?
+    
+    return
 
 
     from importlib import reload  
@@ -130,9 +134,9 @@ def save_distribution(filename, run_name):
 
     now = datetime.now()
     print("now =", now)
-    learning_rate = 0.01 
+    learning_rate = 0.01 # shrink
     batch_size =240000
-    t = TLDA(n_topic,n_senti=1, alpha_0= beta_0, n_iter_train=1000, n_iter_test=150, batch_size=batch_size,
+    t = TLDA(n_topic,n_senti=1, alpha_0= beta_0, n_iter_train=1000, n_iter_test=150, batch_size=batch_size, # increase train, 2000
             learning_rate=learning_rate)
     now = datetime.now()
     print("now =", now)

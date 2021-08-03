@@ -85,7 +85,7 @@ class TLDA():
         mean_gamma_change = 1.0
 
         iter = 0
-        while (mean_gamma_change > 1e-2 and iter < self.n_iter_test):
+        while (mean_gamma_change > 1e-2 and iter < self.n_iter_test): #tweek this
             lastgamma = tl.copy(gammad)
             gammad = ((exp_elogthetad * (tl.dot(exp_elogbetad.T, doc / phinorm))) + self.weights_)
             exp_elogthetad = tl.tensor(cp.exp(tl_util.dirichlet_expectation(gammad)))
