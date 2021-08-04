@@ -74,6 +74,7 @@ def save_distribution(filename, run_name):
     gc.collect()
 
     batch_size = 30000 # increase batch size to 60 thousand
+    #          1000000
     verbose = True
     n_topic =  20
 
@@ -85,11 +86,11 @@ def save_distribution(filename, run_name):
     M1 = dtm_sent.mean(axis=0)
     print('centering, fit pca...')
     centered = []
-    frac = int(dtm_sent.shape[0]/100)
-    for i in range(101):
+    frac = int(dtm_sent.shape[0]/30)
+    for i in range(31):
         gc.collect()
         print(i)
-        if i == 100:
+        if i == 30:
             if i*frac == dtm_sent.shape[0]:
                 break
             centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
@@ -102,10 +103,10 @@ def save_distribution(filename, run_name):
     print("now =", datetime.now())
     print('centering, transform pca...')
     whitened = []
-    for i in range(101):
+    for i in range(31):
         gc.collect()
         print(i)
-        if i == 100:
+        if i == 30:
             if i*frac == dtm_sent.shape[0]:
                 break
             centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
@@ -123,7 +124,7 @@ def save_distribution(filename, run_name):
         pickle.dump(whitened, f)
 # matrix comparison between runs, are they different?
     
-    return
+    # return
 
 
     from importlib import reload  
