@@ -22,36 +22,39 @@ import os, gc
 from collections import OrderedDict
 import pickle
 import pandas as pd
+from guppy import hpy; h=hpy()
+
 # from helpers import load_tweets
 # all_tweets = load_tweets(filenames, preprocessor=None)
 
-def log(message: str):
-    message = str(message)
+def log(message: str, other=''):
+    message = str(message) +' '+ str(other)
     with open('progress.log', 'a') as f:
         f.write(message+'\n')
 
 
 def save_distribution(filename, run_name):
-    print('loading pickle')
+    log('loading pickle')
     with open(filename, 'rb') as f:
         df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
 
 
 
 
-    print("df['tweet']", df['tweet'].shape)
-    print('subsanmpling...')
+    log("df['tweet']", df['tweet'].shape)
     import random
     all_tweets = list(df['tweet'].values)
     # problem using all data? try 5m
     subsample_size = 1000000
     if len(all_tweets) > subsample_size:
+        log('subsampling...')
         tweets = random.sample(all_tweets, subsample_size)
     else:
+        log('no subsampling needed')
         tweets = all_tweets
 
     tweets = cudf.Series(tweets)
-    print("tweets shape", tweets.shape)
+    log("tweets shape", tweets.shape)
     n_samples = len(tweets)
 
 
@@ -62,16 +65,20 @@ def save_distribution(filename, run_name):
                         min_df = 100,
                         max_features=6000)
                         
-    print('vectorizing...')
+    log('vectorizing...')
 
     dtm = vec.fit_transform(tweets)
-    print('converting to cupy...')
+    log('converting to cupy...')
     dtm_sent = cupyx.scipy.sparse.csr_matrix(dtm)
     start = datetime.now()
-    print("now =", start)
+    log("now =", start)
+    log('mem:', h.heap().size)
 
     del dtm
     gc.collect()
+    log('gc dtm')
+    log('mem:', h.heap().size)
+
 
     batch_size = 30000 # increase batch size to 60 thousand
     #          1000000
@@ -82,14 +89,20 @@ def save_distribution(filename, run_name):
 
     pca = IncrementalPCA(n_components = n_topic, batch_size=batch_size, whiten=True)
     gc.collect()
-    print('getting mean...')
+    log('gc')
+    log('mem:', h.heap().size)
+
+    log('getting mean...')
     M1 = dtm_sent.mean(axis=0)
-    print('centering, fit pca...')
+    log('centering, fit pca...')
     centered = []
     frac = int(dtm_sent.shape[0]/30)
     for i in range(31):
         gc.collect()
-        print(i)
+        log('gc')
+        log('mem:', h.heap().size)
+
+        log('batch', i)
         if i == 30:
             if i*frac == dtm_sent.shape[0]:
                 break
@@ -97,15 +110,17 @@ def save_distribution(filename, run_name):
         else:
             centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
 
-        # print('fitting pca...')
+        log('partial fitting pca')
         pca.partial_fit(centered_chunk) # fits PCA to  data, gives W
+        log('mem:', h.heap().size)
 
-    print("now =", datetime.now())
-    print('centering, transform pca...')
+
+    log("now =", datetime.now())
+    log('centering, transform pca...')
     whitened = []
     for i in range(31):
         gc.collect()
-        print(i)
+        log(i)
         if i == 30:
             if i*frac == dtm_sent.shape[0]:
                 break
@@ -116,10 +131,10 @@ def save_distribution(filename, run_name):
         whitened.append(pca.transform(centered_chunk)) # produces a whitened words counts <W,x> for centered data x
 
     whitened = cp.vstack(whitened)
-    print("now =", datetime.now())
+    log("now =", datetime.now())
 
 
-    print("whitened" , whitened.shape)
+    log("whitened" , whitened.shape)
     with open(run_name + '_whitened.p', 'wb') as f:
         pickle.dump(whitened, f)
 # matrix comparison between runs, are they different?
@@ -134,27 +149,27 @@ def save_distribution(filename, run_name):
 
 
     now = datetime.now()
-    print("now =", now)
+    log("now =", now)
     learning_rate = 0.01 # shrink
     batch_size =240000
     t = TLDA(n_topic,n_senti=1, alpha_0= beta_0, n_iter_train=1000, n_iter_test=150, batch_size=batch_size, # increase train, 2000
             learning_rate=learning_rate)
     now = datetime.now()
-    print("now =", now)
+    log("now =", now)
 
 
-    print("t.factors_.shape", t.factors_.shape)
+    log("t.factors_.shape", t.factors_.shape)
 
 
 
     now = datetime.now()
-    print('fitting tlda...')
-    print("now =", now)
+    log('fitting tlda...')
+    log("now =", now)
     t.fit(whitened, verbose=True) # fit whitened wordcounts to get decomposition of M3 through SGD
 
     now = datetime.now()
-    print("now =", now)
-    print('DONE!')
+    log("now =", now)
+    log('DONE!')
 
 
     # EXTRACT and SAVE TOPICS
@@ -200,5 +215,5 @@ def save_distribution(filename, run_name):
 #     save_distribution(filename, run_name)
 
 # check for diff in same subsample
-for run_name in ['run_1', 'run_2']:
+for run_name in ['memtest']:#, 'run_2']:
     save_distribution('../week1test_subset.pickle', run_name)
