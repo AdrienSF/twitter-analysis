@@ -120,7 +120,7 @@ def save_distribution(filename, run_name):
 
     print("whitened" , whitened.shape)
     with open(run_name + '_whitened.p', 'wb') as f:
-        pickle.save(whitened, f)
+        pickle.dump(whitened, f)
 # matrix comparison between runs, are they different?
     
     return
