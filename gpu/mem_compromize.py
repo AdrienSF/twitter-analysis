@@ -140,8 +140,6 @@ def save_distribution(filename, run_name):
 
     # EXTRACT and SAVE TOPICS
     id_map = vec.get_feature_names()
-    print('id_map:', id_map.shape)
-    print('id_map 1000:', id_map[1000])
 
 
 
@@ -163,7 +161,6 @@ def save_distribution(filename, run_name):
 
     # extract topics and correct weights
     probs = t.factors_
-    print('probs:', probs.shape)
     probmaps = []
     for i in range(n_topic):
         ids = probs[i,:].argsort()[:]

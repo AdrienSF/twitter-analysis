@@ -139,7 +139,7 @@ def save_distribution(filename, run_name):
         pickle.dump(whitened, f)
 # matrix comparison between runs, are they different?
     
-    return
+    # return
 
 
     from importlib import reload  
@@ -215,5 +215,5 @@ def save_distribution(filename, run_name):
 #     save_distribution(filename, run_name)
 
 # check for diff in same subsample
-for run_name in ['run_1', 'run_2']:
+for run_name in ['small_chunk_run_1', 'small_chunk_run_2']:
     save_distribution('../week1test_subset.pickle', run_name)
