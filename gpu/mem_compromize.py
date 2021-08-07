@@ -1,5 +1,3 @@
-# import nvcategory
-# import nvstrings
 from datetime import datetime
 import cudf
 import cuml
@@ -8,8 +6,6 @@ from cuml.decomposition import IncrementalPCA
 import cupyx
 from cuml.feature_extraction.text import HashingVectorizer
 from cuml.feature_extraction.text import CountVectorizer
-# from cuml import PCA
-# from cuml.decomposition import PCA
 from cuml.decomposition import IncrementalPCA
 import cupy as cp
 from pca_cupy import PCA
@@ -22,10 +18,7 @@ import os, gc
 from collections import OrderedDict
 import pickle
 import pandas as pd
-from guppy import hpy; h=hpy()
-
-# from helpers import load_tweets
-# all_tweets = load_tweets(filenames, preprocessor=None)
+# from guppy import hpy; h=hpy()
 
 def log(message: str, other=''):
     message = str(message) +' '+ str(other)
@@ -38,14 +31,11 @@ def save_distribution(filename, run_name):
     with open(filename, 'rb') as f:
         df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
 
-
-
-
     log("df['tweet']", df['tweet'].shape)
     import random
     all_tweets = list(df['tweet'].values)
-    # problem using all data? try 5m
-    subsample_size = 1000000
+    # 1m max
+    subsample_size = 100000
     if len(all_tweets) > subsample_size:
         log('subsampling...')
         tweets = random.sample(all_tweets, subsample_size)
@@ -63,21 +53,31 @@ def save_distribution(filename, run_name):
                         ngram_range = (1,2),
                         max_df = 0.5, # works
                         min_df = 100,
-                        max_features=6000)
+                        max_features=1000)
                         
-    log('vectorizing...')
+    log('vectorizing to get vocab...')
+    vec.fit(tweets)
+
+    vocab = vec.vocabulary_.append(cudf.Series(['chinesevirus']))
+
+    log('re-vectorizing with updated vocab')
+    vec = CountVectorizer(stop_words='english',
+                        lowercase = True, # works
+                        ngram_range = (1,2),
+                        vocabulary=vocab)
+
 
     dtm = vec.fit_transform(tweets)
     log('converting to cupy...')
     dtm_sent = cupyx.scipy.sparse.csr_matrix(dtm)
     start = datetime.now()
     log("now =", start)
-    log('mem:', h.heap().size)
+    # log('mem:', h.heap().size)
 
     del dtm
     gc.collect()
     log('gc dtm')
-    log('mem:', h.heap().size)
+    # log('mem:', h.heap().size)
 
 
     batch_size = 30000 # increase batch size to 60 thousand
@@ -87,59 +87,25 @@ def save_distribution(filename, run_name):
 
     beta_0=0.003
 
+    # PCA
     pca = IncrementalPCA(n_components = n_topic, batch_size=batch_size, whiten=True)
     gc.collect()
     log('gc')
-    log('mem:', h.heap().size)
+    # log('mem:', h.heap().size)
 
     log('getting mean...')
     M1 = dtm_sent.mean(axis=0)
     log('centering, fit pca...')
-    centered = []
-    frac = int(dtm_sent.shape[0]/30)
-    for i in range(31):
-        gc.collect()
-        log('gc')
-        log('mem:', h.heap().size)
-
-        log('batch', i)
-        if i == 30:
-            if i*frac == dtm_sent.shape[0]:
-                break
-            centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
-        else:
-            centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
-
-        log('partial fitting pca')
-        pca.partial_fit(centered_chunk) # fits PCA to  data, gives W
-        log('mem:', h.heap().size)
 
 
-    log("now =", datetime.now())
-    log('centering, transform pca...')
-    whitened = []
-    for i in range(31):
-        gc.collect()
-        log(i)
-        if i == 30:
-            if i*frac == dtm_sent.shape[0]:
-                break
-            centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
-        else:
-            centered_chunk = cp.array(dtm_sent[i*frac:(i+1)*frac] - M1) #mem spike
-
-        whitened.append(pca.transform(centered_chunk)) # produces a whitened words counts <W,x> for centered data x
-
-    whitened = cp.vstack(whitened)
+    whitened = pca.fit_transform(dtm_sent - M1)
     log("now =", datetime.now())
 
 
     log("whitened" , whitened.shape)
     with open(run_name + '_whitened.p', 'wb') as f:
         pickle.dump(whitened, f)
-# matrix comparison between runs, are they different?
-    
-    return
+
 
 
     from importlib import reload  
@@ -206,14 +172,5 @@ def save_distribution(filename, run_name):
         pickle.dump(probmaps, f)
 
 
-
-# filenames = sorted(os.listdir('../clean_data/'))
-# filenames = ['../clean_data/' + fname for fname in filenames]
-# for i in range(len(filenames)):
-#     filename = filenames[i]
-#     run_name = 'week' + str(i)
-#     save_distribution(filename, run_name)
-
-# check for diff in same subsample
-for run_name in ['run_1', 'run_2']:
+for run_name in ['3e4batch_size_run_1', '3e4batch_size_run_2']:
     save_distribution('../week1test_subset.pickle', run_name)
