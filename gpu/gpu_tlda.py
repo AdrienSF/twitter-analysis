@@ -96,14 +96,14 @@ def save_distribution(filename, run_name):
     M1 = dtm_sent.mean(axis=0)
     log('centering, fit pca...')
     centered = []
-    frac = int(dtm_sent.shape[0]/30)
-    for i in range(31):
+    frac = int(dtm_sent.shape[0]/100)
+    for i in range(101):
         gc.collect()
         log('gc')
         log('mem:', h.heap().size)
 
         log('batch', i)
-        if i == 30:
+        if i == 100:
             if i*frac == dtm_sent.shape[0]:
                 break
             centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
@@ -118,10 +118,10 @@ def save_distribution(filename, run_name):
     log("now =", datetime.now())
     log('centering, transform pca...')
     whitened = []
-    for i in range(31):
+    for i in range(101):
         gc.collect()
         log(i)
-        if i == 30:
+        if i == 100:
             if i*frac == dtm_sent.shape[0]:
                 break
             centered_chunk = cp.array(dtm_sent[i*frac:] - M1) #mem spike
