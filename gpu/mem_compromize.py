@@ -58,7 +58,7 @@ def save_distribution(filename, run_name):
     log('vectorizing to get vocab...')
     vec.fit(tweets)
 
-    vocab = vec.vocabulary_.append(cudf.Series(['chinesevirus']))
+    vocab = cudf.Series(vec.vocabulary_.to_arrow().to_pylist() + ['chinesevirus'])
 
     log('re-vectorizing with updated vocab')
     vec = CountVectorizer(stop_words='english',
@@ -140,6 +140,8 @@ def save_distribution(filename, run_name):
 
     # EXTRACT and SAVE TOPICS
     id_map = vec.get_feature_names()
+    print('id_map:', id_map.shape)
+    print('id_map 1000:', id_map[1000])
 
 
 
@@ -161,7 +163,7 @@ def save_distribution(filename, run_name):
 
     # extract topics and correct weights
     probs = t.factors_
-
+    print('probs:', probs.shape)
     probmaps = []
     for i in range(n_topic):
         ids = probs[i,:].argsort()[:]
