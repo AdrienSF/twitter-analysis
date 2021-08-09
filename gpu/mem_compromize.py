@@ -103,7 +103,7 @@ def save_distribution(filename, run_name):
 
 
     log("whitened" , whitened.shape)
-    with open(run_name + '_whitened.p', 'wb') as f:
+    with open('convergence_check/whitened/'+run_name + '_whitened.p', 'wb') as f:
         pickle.dump(whitened, f)
 
 
@@ -167,9 +167,9 @@ def save_distribution(filename, run_name):
         prob_dict = {id_map[word_id]: float(probs[i,word_id]) for word_id in ids}
         probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[1])))
 
-    with open(run_name+'_distribution.p', 'wb') as f:
+    with open('convergence_check/distributions/'+run_name+'_distribution.p', 'wb') as f:
         pickle.dump(probmaps, f)
 
 
-for run_name in ['3e4batch_size_run_1', '3e4batch_size_run_2']:
+for run_name in ['run_'+str(i) for i in range(100)]:
     save_distribution('../week1test_subset.pickle', run_name)
