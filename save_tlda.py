@@ -58,7 +58,7 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
     tweets = []
     for name in filenames:
         if '.csv' in name:
-            tweets = tweets + pd.read_csv(filename)['tweet'].to_list()
+            tweets = tweets + pd.read_csv(name)['tweet'].to_list()
         else:
             with open(name, 'rb') as f:
                 tweets = tweets + [t[1] for t in pickle.load(f)]
