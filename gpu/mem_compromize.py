@@ -140,7 +140,7 @@ def save_distribution(filename, run_name):
 
     # EXTRACT and SAVE TOPICS
     id_map = vec.get_feature_names()
-
+w
 
 
     t.factors_ = pca.inverse_transform(t.factors_)  # unwhiten the eigenvectors to get unscaled word-level factors
