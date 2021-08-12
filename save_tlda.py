@@ -10,6 +10,7 @@ import nltk
 import scipy
 import tensorly as tl
 import numpy as np
+import pandas as pd
 # from guppy import hpy; h=hpy()
 from nltk import word_tokenize
 from nltk.corpus import stopwords, wordnet
