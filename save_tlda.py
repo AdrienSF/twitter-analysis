@@ -108,54 +108,13 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
     del tweet_mat
     gc.collect()
 
-    # the following is a memory bottleneck that I need to complete in parts as I only have access to 32G RAM max
-    centered_tweet_mats = []
-    M1 = sparse_tweet_mat.mean(axis=0)
-    fivehundredth = int(sparse_tweet_mat.shape[0]/500)
-    for i in range(501):
-        log('CENTERING CHUNK: ' + str(i))
-        sparse_tweet_chunk = sparse_tweet_mat[i*fivehundredth:(i+1)*fivehundredth]
-        gc.collect()
-        # log('mem after gc: ' + str(h.heap().size))
-        tweet_tensor = tl.tensor(sparse_tweet_chunk.toarray(),dtype=np.float16)
-        # log('mem after gen tweet_tensor: ' + str(h.heap().size))
-        del sparse_tweet_chunk
-        gc.collect()
-        # log('mem after gc: ' + str(h.heap().size))
-        centered_tweet_mats.append(scipy.sparse.csr_matrix(tweet_tensor - M1,dtype=np.float16)) #PEAK MEM USAGE 
-        # log('mem after gen centered_tweet_mat: ' + str(h.heap().size))
-        del tweet_tensor
-        gc.collect()
-        # log('mem after gc: ' + str(h.heap().size))
-
-    log('vstacking')
-    centered_tweet_mat = scipy.sparse.vstack(centered_tweet_mats, format='csr')
-
+    
     # PCA
-    start = datetime.now()
-    log(start)
-    log('fitting pca')
     pca = PCA(n_topics, beta_0, 30000)
-    pca.fit(centered_tweet_mat) # fits PCA to  data, gives W
-    # save pca to file (to have inverse transform)
-    with open(run_name + '_trained_PCA_' + str(date.today())+'.pickle', 'wb') as f:
-        pickle.dump(pca, f)
-
-    log('whitening')
-    whitened_tweet_mat = pca.transform(centered_tweet_mat) # produces a whitened words counts <W,x> for centered data x
-    # save whitened for subsequent use
-    filename = run_name + '_whitened_tweet_mat_' + str(date.today()) + '.npy'
-    np.save(filename, whitened_tweet_mat, allow_pickle=False)
-    log('saved whitened data to ' + filename)
-    # log('mem after whitening: ' + str(h.heap().size))
-    now = datetime.now()
-    log(now)
-    pca_time = now - start 
-    del centered_tweet_mat
-    gc.collect()
-    log('pca and whitening time: ' + str(pca_time))
-    # log('mem after gc: ' + str(h.heap().size))
-
+    M1 = sparse_tweet_mat.mean(axis=0)
+    pca.fit(sparse_tweet_mat - M1)
+    whitened_tweet_mat = pca.transform(sparse_tweet_mat - M1)
+    print('whitened:', whitened_tweet_mat.shape)
 
     # TLDA
     now = datetime.now()
@@ -222,6 +181,6 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
 
 
 # vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + gtp('#ChineseVirus')
-save_tlda(['data/Jan20.csv'], n_topics=20, vocab=None, run_name='start6000CountVec', subsample_proportion=1)
+save_tlda(['data/Jan20.csv'], n_topics=20, vocab=None, run_name='test', subsample_proportion=1)
 # save_tlda(['clean_data/2020-06-18_00-33-05--2020-06-25_19-36-09.pickle'], n_topics=20, vocab=None, run_name='midCountVec', subsample_proportion=.1)
 # save_tlda(['clean_data/2020-08-14_21-46-37--2020-08-17_17-59-01.pickle'], n_topics=20, vocab=None, run_name='endCountVec', subsample_proportion=.1)
