@@ -34,9 +34,12 @@ def log(message: str, other=''):
 
 
 def save_distribution(filename, run_name):
-    log('loading pickle')
-    with open(filename, 'rb') as f:
-        df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
+    log('loading data')
+    if '.csv' in filename:
+        df = pd.read_csv(filename)
+    else:
+        with open(filename, 'rb') as f:
+            df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
 
 
 
@@ -215,5 +218,6 @@ def save_distribution(filename, run_name):
 #     save_distribution(filename, run_name)
 
 # check for diff in same subsample
-for run_name in ['small_chunk_run_1', 'small_chunk_run_2']:
-    save_distribution('../week1test_subset.pickle', run_name)
+# for run_name in ['small_chunk_run_1', 'small_chunk_run_2']:
+#     save_distribution('../week1test_subset.pickle', run_name)
+save_distribution('../data/Jan20.csv', 'test anidesk')

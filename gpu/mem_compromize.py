@@ -27,15 +27,18 @@ def log(message: str, other=''):
 
 
 def save_distribution(filename, run_name):
-    log('loading pickle')
-    with open(filename, 'rb') as f:
-        df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
+    log('loading data')
+    if '.csv' in filename:
+        df = pd.read_csv(filename)
+    else:
+        with open(filename, 'rb') as f:
+            df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
 
     log("df['tweet']", df['tweet'].shape)
     import random
     all_tweets = list(df['tweet'].values)
-    # 1m max
-    subsample_size = 100000
+    # 1m max?
+    subsample_size = int(1e6)
     if len(all_tweets) > subsample_size:
         log('subsampling...')
         tweets = random.sample(all_tweets, subsample_size)
@@ -83,7 +86,7 @@ def save_distribution(filename, run_name):
     batch_size = 30000 # increase batch size to 60 thousand
     #          1000000
     verbose = True
-    n_topic =  20
+    n_topic =  10
 
     beta_0=0.003
 
@@ -103,7 +106,7 @@ def save_distribution(filename, run_name):
 
 
     log("whitened" , whitened.shape)
-    with open('convergence_check/whitened/'+run_name + '_whitened.p', 'wb') as f:
+    with open('convergence_check/whitened/'+run_name + '_whitened.pickle', 'wb') as f:
         pickle.dump(whitened, f)
 
 
@@ -135,12 +138,12 @@ def save_distribution(filename, run_name):
 
     now = datetime.now()
     log("now =", now)
-    log('DONE!')
+    log('DONE! Extracting and saving topics...')
 
 
     # EXTRACT and SAVE TOPICS
     id_map = vec.get_feature_names()
-w
+    
 
 
     t.factors_ = pca.inverse_transform(t.factors_)  # unwhiten the eigenvectors to get unscaled word-level factors
@@ -167,9 +170,13 @@ w
         prob_dict = {id_map[word_id]: float(probs[i,word_id]) for word_id in ids}
         probmaps.append(OrderedDict(sorted(prob_dict.items(), key=lambda x: x[1])))
 
-    with open('convergence_check/distributions/'+run_name+'_distribution.p', 'wb') as f:
+    with open('convergence_check/distributions/'+run_name+'_distribution.pickle', 'wb') as f:
         pickle.dump(probmaps, f)
+
+    log('success')
 
 
 for run_name in ['run_'+str(i) for i in range(100)]:
-    save_distribution('../week1test_subset.pickle', run_name)
+    save_distribution('../data/1Msubset0Feb20.csv', run_name)
+# save_distribution('../data/0Feb20.csv', 'animatest')
+ 
