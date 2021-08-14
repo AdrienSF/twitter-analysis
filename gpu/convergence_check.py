@@ -37,10 +37,8 @@ print('comparing distributions...')
 n_topics = len(distributions[0])
 
 top_words = 10
-tolerance = 7
+tolerance = 3
 
-run1 = distributions[0]
-run2 = distributions[1]
 converges = all([all([are_similar(run1, run2, top_words, tolerance) for run1 in distributions]) for run2 in distributions])
 
 

@@ -14,7 +14,7 @@ tl.set_backend('cupy')
 
 
 
-import os, gc
+import os, gc, sys
 from collections import OrderedDict
 import pickle
 import pandas as pd
@@ -26,7 +26,7 @@ def log(message: str, other=''):
         f.write(message+'\n')
 
 
-def save_distribution(filename, run_name):
+def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000):
     log('loading data')
     if '.csv' in filename:
         df = pd.read_csv(filename)
@@ -119,9 +119,9 @@ def save_distribution(filename, run_name):
 
     now = datetime.now()
     log("now =", now)
-    learning_rate = 0.01 # shrink
+    # learning_rate = 0.01 # shrink
     batch_size =240000
-    t = TLDA(n_topic,n_senti=1, alpha_0= beta_0, n_iter_train=1000, n_iter_test=150, batch_size=batch_size, # increase train, 2000
+    t = TLDA(n_topic,n_senti=1, alpha_0= beta_0, n_iter_train=n_iter_train, n_iter_test=150, batch_size=batch_size, # increase train, 2000
             learning_rate=learning_rate)
     now = datetime.now()
     log("now =", now)
@@ -175,8 +175,8 @@ def save_distribution(filename, run_name):
 
     log('success')
 
-
-for run_name in ['run_'+str(i) for i in range(100)]:
-    save_distribution('../data/1Msubset0Feb20.csv', run_name)
+learning_rate, n_iter_train = float(sys.argv[1]), int(sys.argv[2])
+for run_name in ['run_'+str(i) for i in range(10)]:
+    save_distribution('../data/1Msubset0Feb20.csv', run_name, learning_rate, n_iter_train)
 # save_distribution('../data/0Feb20.csv', 'animatest')
  
