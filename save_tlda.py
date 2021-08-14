@@ -181,6 +181,6 @@ def save_tlda(filenames: list, n_topics: int, run_name: str, vocab=None, beta_0=
 
 
 # vocab = list(np.load('bigVocabCountVec_id-word-map_2021-07-12.npy')) + gtp('#ChineseVirus')
-save_tlda(['data/Jan20.csv'], n_topics=20, vocab=None, run_name='test', subsample_proportion=1)
+save_tlda(['data/Jan20.csv', 'data/0Feb20.csv'], n_topics=20, vocab=None, run_name='test', subsample_proportion=1)
 # save_tlda(['clean_data/2020-06-18_00-33-05--2020-06-25_19-36-09.pickle'], n_topics=20, vocab=None, run_name='midCountVec', subsample_proportion=.1)
 # save_tlda(['clean_data/2020-08-14_21-46-37--2020-08-17_17-59-01.pickle'], n_topics=20, vocab=None, run_name='endCountVec', subsample_proportion=.1)
