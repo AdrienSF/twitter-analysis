@@ -143,3 +143,75 @@ converges: True
 loading distributions...
 comparing distributions...
 converges: False
+python3 mem_comprimize.py 0.001 1000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.001 2000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.001 3000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.001 4000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.001 5000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.001 6000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0005 1000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0005 2000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0005 3000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0005 4000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0005 5000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0005 6000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0001 1000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0001 2000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0001 3000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0001 4000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0001 5000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
+python3 mem_comprimize.py 0.0001 6000
+comparing distributions...
+top_words word_tolerance similarity_thresh | 10 5 5.0
+converges: False
