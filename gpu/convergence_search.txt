@@ -1,4 +1,4 @@
-START
+START ---        learning_rate|n_iter_train
 python3 mem_comprimize.py 0.01 1000
 loading whitened...
 comparing whitened...
@@ -215,3 +215,5 @@ python3 mem_comprimize.py 0.0001 6000
 comparing distributions...
 top_words word_tolerance similarity_thresh | 10 5 5.0
 converges: False
+
+START ---        learning_rate|n_iter_test

@@ -32,7 +32,7 @@ for name in filenames:
     with open(name, 'rb') as f:
         distributions.append(pickle.load(f))
 
-print('comparing distributions...')
+# print('comparing distributions...')
 
 n_topics = len(distributions[0])
 

@@ -26,7 +26,7 @@ def log(message: str, other=''):
         f.write(message+'\n')
 
 
-def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000):
+def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000, n_iter_test=150, batch_size=30000, beta_0=0.003):
     log('loading data')
     if '.csv' in filename:
         df = pd.read_csv(filename)
@@ -83,12 +83,12 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000)
     # log('mem:', h.heap().size)
 
 
-    batch_size = 30000 # increase batch size to 60 thousand
+    # batch_size = 30000 # increase batch size to 60 thousand
     #          1000000
     verbose = True
     n_topic =  10
 
-    beta_0=0.003
+    # beta_0=0.003
 
     # PCA
     pca = IncrementalPCA(n_components = n_topic, batch_size=batch_size, whiten=True)
@@ -175,8 +175,8 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000)
 
     log('success')
 
-learning_rate, n_iter_train = float(sys.argv[1]), int(sys.argv[2])
+learning_rate, n_iter_test = float(sys.argv[1]), int(sys.argv[2])
 for run_name in ['run_'+str(i) for i in range(10)]:
-    save_distribution('../data/1Msubset0Feb20.csv', run_name, learning_rate, n_iter_train)
+    save_distribution('../data/1Msubset0Feb20.csv', run_name, learning_rate, n_iter_test=n_iter_test)
 # save_distribution('../data/0Feb20.csv', 'animatest')
  
