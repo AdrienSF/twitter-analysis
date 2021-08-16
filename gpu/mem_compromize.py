@@ -45,6 +45,8 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
     else:
         log('no subsampling needed')
         tweets = all_tweets
+        log('SHUFFLING INPUT')
+        random.shuffle(tweets)
 
     tweets = cudf.Series(tweets)
     log("tweets shape", tweets.shape)
@@ -175,8 +177,8 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
 
     log('success')
 
-learning_rate, n_iter_test = float(sys.argv[1]), int(sys.argv[2])
+# learning_rate, n_iter_test = float(sys.argv[1]), int(sys.argv[2])
 for run_name in ['run_'+str(i) for i in range(10)]:
-    save_distribution('../data/1Msubset0Feb20.csv', run_name, learning_rate, n_iter_test=n_iter_test)
+    save_distribution('../data/1Msubset0Feb20.csv', run_name)#, learning_rate, n_iter_test=n_iter_test)
 # save_distribution('../data/0Feb20.csv', 'animatest')
  
