@@ -26,6 +26,18 @@ def log(message: str, other=''):
         f.write(message+'\n')
 
 
+def shuffle_forward(l):
+    order = range(len(l)); random.shuffle(order)
+    return list(cp.array(l)[order]), order
+
+def shuffle_backward(l, order):
+    l_out = cp.zeros((l.shape))
+    for i, j in enumerate(order):
+        l_out[j] = l[i]
+    return l_out
+
+
+
 def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000, n_iter_test=150, batch_size=30000, beta_0=0.003):
     log('loading data')
     if '.csv' in filename:
@@ -42,11 +54,12 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
     if len(all_tweets) > subsample_size:
         log('subsampling...')
         tweets = random.sample(all_tweets, subsample_size)
+        order = None
     else:
         log('no subsampling needed')
         tweets = all_tweets
         log('SHUFFLING INPUT')
-        random.shuffle(tweets)
+        tweets, order = shuffle_forward(tweets)
 
     tweets = cudf.Series(tweets)
     log("tweets shape", tweets.shape)
@@ -108,6 +121,9 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
 
 
     log("whitened" , whitened.shape)
+    if order:
+        log('UNSHUFFLING')
+        whitened = shuffle_backward(whitened, order)
     with open('convergence_check/whitened/'+run_name + '_whitened.pickle', 'wb') as f:
         pickle.dump(whitened, f)
 
