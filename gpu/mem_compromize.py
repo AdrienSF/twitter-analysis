@@ -27,7 +27,7 @@ def log(message: str, other=''):
 
 
 def shuffle_forward(l):
-    order = range(len(l)); random.shuffle(order)
+    order = list(range(len(l))); random.shuffle(order)
     return list(np.array(l)[order]), order
 
 def shuffle_backward(l, order):
