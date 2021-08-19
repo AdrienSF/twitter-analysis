@@ -46,3 +46,7 @@ convergence = all([all([get_similarity(run1, run2, top_words, word_tolerance) >=
 
 print('top_words word_tolerance similarity_thresh |', top_words, word_tolerance, similarity_thresh)
 print('converges:', convergence)
+get_similarity(distributions[0], distributions[1], top_words, word_tolerance)
+get_similarity(distributions[0], distributions[2], top_words, word_tolerance)
+get_similarity(distributions[0], distributions[3], top_words, word_tolerance)
+get_similarity(distributions[0], distributions[4], top_words, word_tolerance)
