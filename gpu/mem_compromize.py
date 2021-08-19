@@ -31,6 +31,7 @@ def shuffle_forward(l):
     return list(np.array(l)[order]), order
 
 def shuffle_backward(l, order):
+    l = l.to_numpy()
     l_out = np.zeros((l.shape))
     for i, j in enumerate(order):
         l_out[j] = l[i]
