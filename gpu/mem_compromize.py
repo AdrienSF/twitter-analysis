@@ -15,6 +15,7 @@ tl.set_backend('cupy')
 
 
 import os, gc, sys, random
+import regex as re
 from collections import OrderedDict
 import pickle
 import pandas as pd
