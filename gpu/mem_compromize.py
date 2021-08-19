@@ -101,7 +101,7 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
     # batch_size = 30000 # increase batch size to 60 thousand
     #          1000000
     verbose = True
-    n_topic =  10
+    n_topic =  20
 
     # beta_0=0.003
 
@@ -194,7 +194,7 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
     log('success')
 
 # learning_rate, n_iter_test = float(sys.argv[1]), int(sys.argv[2])
-for run_name in ['run_'+str(i) for i in range(10)]:
-    save_distribution('../data/1Msubset0Feb20.csv', run_name)#, learning_rate, n_iter_test=n_iter_test)
-# save_distribution('../data/0Feb20.csv', 'animatest')
+# for run_name in ['run_'+str(i) for i in range(10)]:
+#     save_distribution('../data/1Msubset0Feb20.csv', run_name)#, learning_rate, n_iter_test=n_iter_test)
+save_distribution('newsgroups.csv', 'newsgroups')
  
