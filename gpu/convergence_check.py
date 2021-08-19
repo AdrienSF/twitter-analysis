@@ -38,8 +38,8 @@ for name in filenames:
 
 n_topics = len(distributions[0])
 
-top_words = 20
-word_tolerance = 10
+top_words = 10
+word_tolerance = 5
 similarity_thresh = n_topics/2
 
 convergence = all([all([get_similarity(run1, run2, top_words, word_tolerance) >= similarity_thresh  for run1 in distributions]) for run2 in distributions])
