@@ -46,9 +46,15 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
         with open(filename, 'rb') as f:
             df = pd.DataFrame(pickle.load(f), columns =['date', 'tweet'])
 
+
     log("df['tweet']", df['tweet'].shape)
     import random
     all_tweets = list(df['tweet'].values)
+    log('cleaning data')
+    # remove hashtags and usernames
+    all_tweets = [re.sub("#[A-Za-z0-9_]+","", re.sub("@[A-Za-z0-9_]+","", tweet)) for tweet in all_tweets]
+
+
     # 1m max?
     subsample_size = int(1e6)
     if len(all_tweets) > subsample_size:
