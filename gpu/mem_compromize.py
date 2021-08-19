@@ -1,7 +1,7 @@
 from datetime import datetime
 import cudf
 import cuml
-# import numpy as np
+import numpy as np
 from cuml.decomposition import IncrementalPCA
 import cupyx
 from cuml.feature_extraction.text import HashingVectorizer
@@ -14,7 +14,7 @@ tl.set_backend('cupy')
 
 
 
-import os, gc, sys
+import os, gc, sys, random
 from collections import OrderedDict
 import pickle
 import pandas as pd
@@ -28,10 +28,10 @@ def log(message: str, other=''):
 
 def shuffle_forward(l):
     order = range(len(l)); random.shuffle(order)
-    return list(cp.array(l)[order]), order
+    return list(np.array(l)[order]), order
 
 def shuffle_backward(l, order):
-    l_out = cp.zeros((l.shape))
+    l_out = np.zeros((l.shape))
     for i, j in enumerate(order):
         l_out[j] = l[i]
     return l_out
@@ -194,7 +194,8 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
     log('success')
 
 # learning_rate, n_iter_test = float(sys.argv[1]), int(sys.argv[2])
-# for run_name in ['run_'+str(i) for i in range(10)]:
-#     save_distribution('../data/1Msubset0Feb20.csv', run_name)#, learning_rate, n_iter_test=n_iter_test)
-save_distribution('newsgroups.csv', 'newsgroups')
+for run_name in ['run_'+str(i) for i in range(10)]:
+    save_distribution('newsgroups.csv', run_name)#, learning_rate, n_iter_test=n_iter_test)
+    # save_distribution('../data/1Msubset0Feb20.csv', run_name)#, learning_rate, n_iter_test=n_iter_test)
+# save_distribution('newsgroups.csv', 'newsgroups')
  
