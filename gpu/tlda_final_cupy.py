@@ -21,7 +21,7 @@ class TLDA():
         self.gamma_shape = gamma_shape
         self.smoothing   = smoothing
         self.weights_ = tl.ones(self.n_topic*self.n_senti)
-        self.factors_ = tl.tensor(cp.random.randn(self.n_topic, self.n_topic)/10000)
+        self.factors_ = tl.tensor(cp.random.normal(0, 1/10000))
 
     def partial_fit(self, X_batch, verbose = False):
         '''Update the factors directly from the batch using stochastic gradient descent

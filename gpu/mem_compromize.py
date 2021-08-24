@@ -81,15 +81,15 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
                         max_features=1000)
                         
     log('vectorizing to get vocab...')
-    vec.fit(tweets)
+    # vec.fit(tweets)
 
-    vocab = cudf.Series(vec.vocabulary_.to_arrow().to_pylist() + ['chinesevirus'])
+    # vocab = cudf.Series(vec.vocabulary_.to_arrow().to_pylist() + ['chinesevirus'])
 
-    log('re-vectorizing with updated vocab')
-    vec = CountVectorizer(stop_words='english',
-                        lowercase = True, # works
-                        ngram_range = (1,2),
-                        vocabulary=vocab)
+    # log('re-vectorizing with updated vocab')
+    # vec = CountVectorizer(stop_words='english',
+    #                     lowercase = True, # works
+    #                     ngram_range = (1,2),
+    #                     vocabulary=vocab)
 
 
     dtm = vec.fit_transform(tweets)
@@ -160,6 +160,10 @@ def save_distribution(filename, run_name, learning_rate=0.01, n_iter_train=1000,
     log('fitting tlda...')
     log("now =", now)
     t.fit(whitened, verbose=True) # fit whitened wordcounts to get decomposition of M3 through SGD
+
+    # check cumulant gradient
+    log(cp.sum(t.factors_/t.learning_rate))
+
 
     now = datetime.now()
     log("now =", now)
