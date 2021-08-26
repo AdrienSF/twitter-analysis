@@ -21,7 +21,13 @@ class TLDA():
         self.gamma_shape = gamma_shape
         self.smoothing   = smoothing
         self.weights_ = tl.ones(self.n_topic*self.n_senti)
-        self.factors_ = tl.tensor(cp.random.normal(0, 1/10000))
+
+        rank = self.n_topic
+        std = 0.002
+        order = 3
+        std_factors = (std/math.sqrt(rank))**(1/order)
+
+        self.factors_ = tl.tensor(cp.random.normal(0, std_factors, size=(self.n_topic, self.n_topic)))
 
     def partial_fit(self, X_batch, verbose = False):
         '''Update the factors directly from the batch using stochastic gradient descent
@@ -34,15 +40,21 @@ class TLDA():
         '''
         # incremental version
         y_mean = tl.mean(X_batch, axis=0)
-
+        step = None
         for i in range(1, self.n_iter_train):
-            for j in range(0, len(X_batch)-(self.batch_size-1), self.batch_size):
-                y = X_batch[j:j+self.batch_size]
+            # wut = list(range(0, len(X_batch)-(self.batch_size-1), self.batch_size))
+            wut = list(range(0, len(X_batch)-(self.batch_size-1), self.batch_size))
+            # print('range:', X_batch.shape[0]/self.batch_size)
+            for j in range(math.ceil(X_batch.shape[0]/self.batch_size)):
+                y = X_batch[j*self.batch_size:(j+1)*self.batch_size]
 
-                lr = self.learning_rate*(10/(10+i))
-                self.factors_ -= lr*cumulant_gradient(self.factors_, y, self.alpha_0,1)
+                # lr = self.learning_rate*(1/math.pow(10+i, 2))
+                lr = self.learning_rate*((self.n_iter_train-i+1)/self.n_iter_train)
+                step = lr*cumulant_gradient(self.factors_, y, self.alpha_0,1)
+                self.factors_ -= step
             if verbose == True and (i % 200) == 0:
                 print("Epoch: " + str(i) )
+                print("step mean:", tl.mean(step))
 
     def fit(self, X, verbose = False):
         '''Update the factors directly from X using stochastic gradient descent
