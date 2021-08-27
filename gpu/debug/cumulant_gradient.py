@@ -17,5 +17,6 @@ def cumulant_gradient(phi, y_batch, alpha=1, theta=1):
         of shape (n_features, rank)
     """
     gradient = 3*(1 + theta)*tl.dot(phi, tl.dot(phi.T, phi)**2)
-    gradient -= 3*(1 + alpha)*(2 + alpha)/(2*y_batch.shape[0])*tl.dot(y_batch.T, tl.dot(y_batch, phi)**2)
+    # gradient = 0
+    # gradient -= 3*(1 + alpha)*(2 + alpha)/(2*y_batch.shape[0])*tl.dot(y_batch.T, tl.dot(y_batch, phi)**2)
     return gradient

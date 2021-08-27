@@ -9,7 +9,8 @@ import tensor_lda_util as tl_util
 
 
 class TLDA():
-    def __init__(self, n_topic,n_senti ,alpha_0, n_iter_train, n_iter_test, batch_size, learning_rate = 0.001, gamma_shape = 1.0, smoothing = 1e-6): # we could try to find a more informative name for alpha_0
+    def __init__(self, n_topic,n_senti ,alpha_0, n_iter_train, n_iter_test, 
+    batch_size, learning_rate = 0.001,theta=5, gamma_shape = 1.0, smoothing = 1e-6): # we could try to find a more informative name for alpha_0
         # set all parameters here
         self.n_topic = n_topic
         self.n_senti = n_senti
@@ -21,9 +22,10 @@ class TLDA():
         self.gamma_shape = gamma_shape
         self.smoothing   = smoothing
         self.weights_ = tl.ones(self.n_topic*self.n_senti)
+        self.theta = theta
 
         rank = self.n_topic
-        std = 0.002
+        std = 0.2
         order = 3
         std_factors = (std/math.sqrt(rank))**(1/order)
 
@@ -50,11 +52,18 @@ class TLDA():
 
                 # lr = self.learning_rate*(1/math.pow(10+i, 2))
                 lr = self.learning_rate*((self.n_iter_train-i+1)/self.n_iter_train)
-                step = lr*cumulant_gradient(self.factors_, y, self.alpha_0,1)
+                step = lr*cumulant_gradient(self.factors_, y, self.alpha_0,self.theta)
                 self.factors_ -= step
             if verbose == True and (i % 200) == 0:
                 print("Epoch: " + str(i) )
-                print("step mean:", tl.mean(step))
+                print("Mean Gradient:", tl.mean(step))
+                orthog_penalty    = (1 + self.theta)/2*tl.sum(tl.diag(tl.dot(tl.dot(self.factors_.T, self.factors_)**2,tl.dot(self.factors_.T, self.factors_))))
+                # correlation_bonus = -(1 + self.alpha_0)*(2 + self.alpha_0)/(2*y.shape[0])*tl.dot( tl.dot(self.factors_,y.T)**2,tl.dot(y,self.factors_.T))
+                #L_v =   orthog_penalty + correlation_bonus
+                print('orthog_penalty:', tl.mean(orthog_penalty))
+                # print('Correlation Bonus:' + str(tl.mean(correlation_bonus)))
+                #print("Loss Function: " + str(tl.mean(L_v)))
+
 
     def fit(self, X, verbose = False):
         '''Update the factors directly from X using stochastic gradient descent
