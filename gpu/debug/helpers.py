@@ -124,7 +124,7 @@ def get_phi(top_n, vocab_size, doc_num, t_per_doc,alpha_val=1.5):
 
     #beta = [0.01 for i in range(VOCABULARY_SIZE)]
     #alpha = [0.9 for i in range(TOPIC_N)]
-    beta = [0.5 for i in range(VOCABULARY_SIZE)]
+    beta = [0.01 for i in range(VOCABULARY_SIZE)] # 0.5
     alpha = [alpha_val for i in range(TOPIC_N)]
 
     phi = []
