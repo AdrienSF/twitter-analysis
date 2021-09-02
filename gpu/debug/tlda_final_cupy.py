@@ -6,6 +6,7 @@ import tensorly as tl
 tl.set_backend('cupy')
 from cumulant_gradient import cumulant_gradient
 import tensor_lda_util as tl_util
+from helpers import loss_rec, loss_15
 
 
 class TLDA():
@@ -25,11 +26,15 @@ class TLDA():
         self.theta = theta
 
         rank = self.n_topic
-        std = 0.2
+        std = 0.8770580193070291 #std(a_whit): 0.8770580193070291
+        # std = 1.0065432517311519 #=std(y(cross)^3) for unit_test's test input a ?
         order = 3
         std_factors = (std/math.sqrt(rank))**(1/order)
 
         self.factors_ = tl.tensor(cp.random.normal(0, std_factors, size=(self.n_topic, self.n_topic)))
+
+
+
 
     def partial_fit(self, X_batch, verbose = False):
         '''Update the factors directly from the batch using stochastic gradient descent
@@ -42,6 +47,7 @@ class TLDA():
         '''
         # incremental version
         y_mean = tl.mean(X_batch, axis=0)
+        N      = X_batch.shape[0]    
         step = None
         for i in range(1, self.n_iter_train):
             # wut = list(range(0, len(X_batch)-(self.batch_size-1), self.batch_size))
@@ -51,18 +57,22 @@ class TLDA():
                 y = X_batch[j*self.batch_size:(j+1)*self.batch_size]
 
                 # lr = self.learning_rate*(1/math.pow(10+i, 2))
-                lr = self.learning_rate*((self.n_iter_train-i+1)/self.n_iter_train)
+                # lr = self.learning_rate*((self.n_iter_train-i+1)/self.n_iter_train)
+                lr   = self.learning_rate*(math.cos(1000*math.pi*(i/self.batch_size)) + 1.0001)
                 step = lr*cumulant_gradient(self.factors_, y, self.alpha_0,self.theta)
                 self.factors_ -= step
-            if verbose == True and (i % 200) == 0:
+            if verbose == True and ((i % 200) == 0 or i < 200):
                 print("Epoch: " + str(i) )
                 print("Mean Gradient:", tl.mean(step))
-                orthog_penalty    = (1 + self.theta)/2*tl.sum(tl.diag(tl.dot(tl.dot(self.factors_.T, self.factors_)**2,tl.dot(self.factors_.T, self.factors_))))
-                # correlation_bonus = -(1 + self.alpha_0)*(2 + self.alpha_0)/(2*y.shape[0])*tl.dot( tl.dot(self.factors_,y.T)**2,tl.dot(y,self.factors_.T))
-                #L_v =   orthog_penalty + correlation_bonus
-                print('orthog_penalty:', tl.mean(orthog_penalty))
-                # print('Correlation Bonus:' + str(tl.mean(correlation_bonus)))
-                #print("Loss Function: " + str(tl.mean(L_v)))
+                cumulant = (self.alpha_0 + 1)*(self.alpha_0 + 2)/(2*N)*tl.cp_to_tensor((None, [y.T]*3))
+
+                L_v, ortho_loss, rec_loss       =  loss_rec(self.factors_,cumulant,self.theta)  
+                L_v15, ortho_loss15, rec_loss15 =  loss_15(self.factors_,cumulant,self.theta)  
+
+                #print('orthog_penalty:', tl.mean(orthog_penalty))
+                #print('Correlation Bonus:' + str(tl.mean(correlation_bonus)))
+                print(f"Loss Function={str(tl.mean(L_v))}, orthogonality loss={ortho_loss}, rec-loss={rec_loss}")
+                print(f"Loss_15 Function={str(tl.mean(L_v15))}, orthogonality loss={ortho_loss15}, rec-loss={rec_loss15}")
 
 
     def fit(self, X, verbose = False):
@@ -133,19 +143,19 @@ class TLDA():
                  adjusted factor
         '''
 
-        adjusted_factor = tl.transpose(self.factors_)
         #adjusted_factor = tl_util.non_negative_adjustment(adjusted_factor)
         #adjusted_factor = tl_util.smooth_beta(adjusted_factor, smoothing=self.smoothing)
-        
-        
+
+        adjusted_factor = self.factors_
         # set negative part to 0
         adjusted_factor[adjusted_factor < 0.] = 0.
         # smooth beta
         adjusted_factor *= (1. - self.smoothing)
         adjusted_factor += (self.smoothing / adjusted_factor.shape[1])
-
+        # normalize
         adjusted_factor /= adjusted_factor.sum(axis=1)[:, cp.newaxis]
-        
+        adjusted_factor = tl.transpose(self.factors_) # n_docs x k_topics
+
         
         if doc_predict == True:
 

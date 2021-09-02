@@ -5,12 +5,26 @@ import gensim
 from gensim.models import CoherenceModel
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 import nltk
+import numpy as np
+import numpy.random
+
+import tensorly as tl
+
 # nltk.download('wordnet')
 
-def log(message: str):
-    message = str(message)
-    with open('progress.log', 'a') as f:
-        f.write(message+'\n')
+def loss_rec(factor, cumulant, theta):
+    rec = tl.cp_to_tensor((None, [factor]*3))
+    #rec_loss = tl.tenalg.inner(rec, cumulant)
+    rec_loss = tl.norm(rec - cumulant, 2)**2
+    ortho_loss = (1 + theta)/2*tl.norm(rec, 2)**2
+    return ortho_loss + rec_loss, ortho_loss, rec_loss/tl.norm(cumulant, 2)
+
+def loss_15(factor, cumulant, theta):
+    rec = tl.cp_to_tensor((None, [factor]*3))
+    rec_loss = tl.norm(rec, 2)**2 + tl.norm(cumulant, 2)**2 - 2*tl.tenalg.inner(rec, cumulant) 
+    # rec_loss = tl.norm(rec - cumulant, 2)**2
+    ortho_loss = (1 + theta)/2*tl.norm(rec, 2)**2
+    return ortho_loss + rec_loss, ortho_loss, rec_loss/tl.norm(cumulant, 2)
 
 
 def compute_coherence_values(corpus, dictionary, k, a='symmetric', b=None, coherence='u_mass', texts=None):
@@ -85,3 +99,67 @@ def load_tweets(filenames, preprocessor=gtp, subsample_proportion=1):
 
 
     return all_tweets
+
+
+
+
+
+
+
+
+
+
+
+def get_phi(top_n, vocab_size, doc_num, t_per_doc,alpha_val=1.5):
+    np.random.seed(seed=0)
+    '''use code here:
+    http://www.hongliangjie.com/2010/09/30/generate-synthetic-data-for-lda/
+    to get document, topic matrices'''
+    ## define some constant
+    TOPIC_N = top_n
+    VOCABULARY_SIZE = vocab_size
+    DOC_NUM = doc_num
+    TERM_PER_DOC = t_per_doc
+    w_arr = np.zeros((DOC_NUM, VOCABULARY_SIZE), dtype=np.float32)
+
+    #beta = [0.01 for i in range(VOCABULARY_SIZE)]
+    #alpha = [0.9 for i in range(TOPIC_N)]
+    beta = [0.5 for i in range(VOCABULARY_SIZE)]
+    alpha = [alpha_val for i in range(TOPIC_N)]
+
+    phi = []
+    theta_arr = np.zeros((DOC_NUM, TOPIC_N))
+    ## generate multinomial distribution over words for each topic
+    for i in range(TOPIC_N):
+    	topic =	numpy.random.mtrand.dirichlet(beta, size = 1)
+    	phi.append(topic)
+
+    for i in range(DOC_NUM):
+    	buffer = {}
+    	z_buffer = {} ## keep track the true z
+    	## first sample theta
+    	theta = numpy.random.mtrand.dirichlet(alpha,size = 1)
+    	for j in range(TERM_PER_DOC):
+    		## first sample z
+    		z = numpy.random.multinomial(1,theta[0],size = 1)
+    		z_assignment = 0
+    		for k in range(TOPIC_N):
+    			if z[0][k] == 1:
+    				break
+    			z_assignment += 1
+    		if not z_assignment in z_buffer:
+    			z_buffer[z_assignment] = 0
+    		z_buffer[z_assignment] = z_buffer[z_assignment] + 1
+    		## sample a word from topic z
+    		w = numpy.random.multinomial(1,phi[z_assignment][0],size = 1)
+    		w_assignment = 0
+    		for k in range(VOCABULARY_SIZE):
+    			if w[0][k] == 1:
+    				break
+    			w_assignment += 1
+    		if not w_assignment in buffer:
+    			buffer[w_assignment] = 0
+    		buffer[w_assignment] = buffer[w_assignment] + 1
+    		w_arr[i] = w_arr[i] + w
+    	theta_arr[i] = theta
+    return tl.tensor(w_arr), phi, theta_arr, sum(alpha)
