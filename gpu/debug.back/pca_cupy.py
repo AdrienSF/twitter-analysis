@@ -46,16 +46,8 @@ class PCA():
         ----------
         X : whitened input tensor 
         if data:  n_documents x n_topics
-        otherwise: n_topics x n_topics 
+        otherwise: n_topics x _topics 
 
-        Constructed Input: 
-        W_psuedo_inverse:  n_features x n_topics
-
-        Output
-        ---------------------
-        topic word matrix: 
-        data: n_documents x n_features
-        phi: n_topics x n_topics 
-
+        Con
         '''
-        return tl.dot((self.projection_weights_ * tl.sqrt(self.whitening_weights_)),X )
+        return tl.dot(X, (self.projection_weights_ * tl.sqrt(self.whitening_weights_)).T)

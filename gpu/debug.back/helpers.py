@@ -9,8 +9,6 @@ import numpy as np
 import numpy.random
 
 import tensorly as tl
-from tensorly.tenalg.core_tenalg.tensor_product import batched_tensor_dot
-
 
 # nltk.download('wordnet')
 
@@ -19,7 +17,7 @@ def loss_rec(factor, cumulant, theta):
     #rec_loss = tl.tenalg.inner(rec, cumulant)
     rec_loss = tl.norm(rec - cumulant, 2)**2
     ortho_loss = (1 + theta)/2*tl.norm(rec, 2)**2
-    return ortho_loss + rec_loss, ortho_loss, rec_loss#/tl.norm(cumulant, 2)
+    return ortho_loss + rec_loss, ortho_loss, rec_loss/tl.norm(cumulant, 2)
 
 def loss_15(factor, cumulant, theta):
     rec = tl.cp_to_tensor((None, [factor]*3))
@@ -126,7 +124,7 @@ def get_phi(top_n, vocab_size, doc_num, t_per_doc,alpha_val=1.5):
 
     #beta = [0.01 for i in range(VOCABULARY_SIZE)]
     #alpha = [0.9 for i in range(TOPIC_N)]
-    beta = [0.01 for i in range(VOCABULARY_SIZE)] # 0.5
+    beta = [0.5 for i in range(VOCABULARY_SIZE)]
     alpha = [alpha_val for i in range(TOPIC_N)]
 
     phi = []
@@ -165,11 +163,3 @@ def get_phi(top_n, vocab_size, doc_num, t_per_doc,alpha_val=1.5):
     		w_arr[i] = w_arr[i] + w
     	theta_arr[i] = theta
     return tl.tensor(w_arr), phi, theta_arr, sum(alpha)
-
-
-
-
-
-def get_transformed_mean(things):
-    pass
-#  al lot of batched_tensor_dot()

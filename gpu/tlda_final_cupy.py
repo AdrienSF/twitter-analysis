@@ -6,12 +6,10 @@ import tensorly as tl
 tl.set_backend('cupy')
 from cumulant_gradient import cumulant_gradient
 import tensor_lda_util as tl_util
-from helpers import loss_rec, loss_15
 
 
 class TLDA():
-    def __init__(self, n_topic,n_senti ,alpha_0, n_iter_train, n_iter_test, 
-    batch_size, learning_rate = 0.001,theta=5, gamma_shape = 1.0, smoothing = 1e-6): # we could try to find a more informative name for alpha_0
+    def __init__(self, n_topic,n_senti ,alpha_0, n_iter_train, n_iter_test, batch_size, learning_rate = 0.001, gamma_shape = 1.0, smoothing = 1e-6): # we could try to find a more informative name for alpha_0
         # set all parameters here
         self.n_topic = n_topic
         self.n_senti = n_senti
@@ -23,19 +21,7 @@ class TLDA():
         self.gamma_shape = gamma_shape
         self.smoothing   = smoothing
         self.weights_ = tl.ones(self.n_topic*self.n_senti)
-        self.theta = theta
-
-        rank = self.n_topic
-        std = .001
-        # std = 0.8770580193070291 #std(a_whit): 0.8770580193070291
-        # std = 1.0065432517311519 #=std(y(cross)^3) for unit_test's test input a ?
-        order = 3
-        std_factors = (std/math.sqrt(rank))**(1/order)
-
-        self.factors_ = tl.tensor(cp.random.normal(0, std_factors, size=(self.n_topic, self.n_topic)))
-
-
-
+        self.factors_ = tl.tensor(cp.random.randn(self.n_topic, self.n_topic)/10000)
 
     def partial_fit(self, X_batch, verbose = False):
         '''Update the factors directly from the batch using stochastic gradient descent
@@ -48,33 +34,15 @@ class TLDA():
         '''
         # incremental version
         y_mean = tl.mean(X_batch, axis=0)
-        N      = X_batch.shape[0]    
-        step = None
+
         for i in range(1, self.n_iter_train):
-            # wut = list(range(0, len(X_batch)-(self.batch_size-1), self.batch_size))
-            wut = list(range(0, len(X_batch)-(self.batch_size-1), self.batch_size))
-            # print('range:', X_batch.shape[0]/self.batch_size)
-            for j in range(math.ceil(X_batch.shape[0]/self.batch_size)):
-                y = X_batch[j*self.batch_size:(j+1)*self.batch_size]
+            for j in range(0, len(X_batch)-(self.batch_size-1), self.batch_size):
+                y = X_batch[j:j+self.batch_size]
 
-                # lr = self.learning_rate*(1/math.pow(10+i, 2))
-                # lr = self.learning_rate*((self.n_iter_train-i+1)/self.n_iter_train)
-                lr   = self.learning_rate*(math.cos(1000*math.pi*(i/self.batch_size)) + 1.0001)
-                step = lr*cumulant_gradient(self.factors_, y, self.alpha_0,self.theta)
-                self.factors_ -= step
-            if verbose == True and ((i % 200) == 0 or i < 200):
+                lr = self.learning_rate*(10/(10+i))
+                self.factors_ -= lr*cumulant_gradient(self.factors_, y, self.alpha_0,1)
+            if verbose == True and (i % 200) == 0:
                 print("Epoch: " + str(i) )
-                print("Mean Gradient:", tl.mean(step))
-                cumulant = (self.alpha_0 + 1)*(self.alpha_0 + 2)/(2*N)*tl.cp_to_tensor((None, [y.T]*3))
-
-                L_v, ortho_loss, rec_loss       =  loss_rec(self.factors_,cumulant,self.theta)  
-                L_v15, ortho_loss15, rec_loss15 =  loss_15(self.factors_,cumulant,self.theta)  
-
-                #print('orthog_penalty:', tl.mean(orthog_penalty))
-                #print('Correlation Bonus:' + str(tl.mean(correlation_bonus)))
-                print(f"Loss Function={str(tl.mean(L_v))}, orthogonality loss={ortho_loss}, rec-loss={rec_loss}")
-                print(f"Loss_15 Function={str(tl.mean(L_v15))}, orthogonality loss={ortho_loss15}, rec-loss={rec_loss15}")
-
 
     def fit(self, X, verbose = False):
         '''Update the factors directly from X using stochastic gradient descent
@@ -144,23 +112,19 @@ class TLDA():
                  adjusted factor
         '''
 
+        adjusted_factor = tl.transpose(self.factors_)
         #adjusted_factor = tl_util.non_negative_adjustment(adjusted_factor)
         #adjusted_factor = tl_util.smooth_beta(adjusted_factor, smoothing=self.smoothing)
-        adjusted_factor = tl.transpose(self.factors_) #  k_topics x n_features
-
-        # adjusted_factor = self.factors_
+        
+        
         # set negative part to 0
-        print(adjusted_factor.shape)
-        # minres = cp.min(adjusted_factor)
-        # adjusted_factor += abs(minres)
         adjusted_factor[adjusted_factor < 0.] = 0.
         # smooth beta
         adjusted_factor *= (1. - self.smoothing)
         adjusted_factor += (self.smoothing / adjusted_factor.shape[1])
-        # normalize
-        print(adjusted_factor.shape)
-        adjusted_factor /= adjusted_factor.sum(axis=0)#[:, cp.newaxis]
-        adjusted_factor = tl.transpose(self.factors_) #   n_features x k_topics  
+
+        adjusted_factor /= adjusted_factor.sum(axis=1)[:, cp.newaxis]
+        
         
         if doc_predict == True:
 

@@ -7,7 +7,7 @@ from tensorly.tenalg.core_tenalg import tensor_dot, batched_tensor_dot, outer, i
 
 def cumulant_gradient(phi, y_batch, alpha=1, theta=1):
     """Computes the average gradient for a batch of whitened samples
-    phi : (n_features, rank) 
+    phi : (n_features, rank)
         factor to be optimized
     y_batch : (n_samples, n_features)
         each row is one whitened sample
@@ -17,6 +17,5 @@ def cumulant_gradient(phi, y_batch, alpha=1, theta=1):
         of shape (n_features, rank)
     """
     gradient = 3*(1 + theta)*tl.dot(phi, tl.dot(phi.T, phi)**2)
-    #gradient = 0
     gradient -= 3*(1 + alpha)*(2 + alpha)/(2*y_batch.shape[0])*tl.dot(y_batch.T, tl.dot(y_batch, phi)**2)
     return gradient

@@ -26,8 +26,7 @@ class TLDA():
         self.theta = theta
 
         rank = self.n_topic
-        std = .001
-        # std = 0.8770580193070291 #std(a_whit): 0.8770580193070291
+        std = 0.8770580193070291 #std(a_whit): 0.8770580193070291
         # std = 1.0065432517311519 #=std(y(cross)^3) for unit_test's test input a ?
         order = 3
         std_factors = (std/math.sqrt(rank))**(1/order)
@@ -146,21 +145,17 @@ class TLDA():
 
         #adjusted_factor = tl_util.non_negative_adjustment(adjusted_factor)
         #adjusted_factor = tl_util.smooth_beta(adjusted_factor, smoothing=self.smoothing)
-        adjusted_factor = tl.transpose(self.factors_) #  k_topics x n_features
 
-        # adjusted_factor = self.factors_
+        adjusted_factor = self.factors_
         # set negative part to 0
-        print(adjusted_factor.shape)
-        # minres = cp.min(adjusted_factor)
-        # adjusted_factor += abs(minres)
         adjusted_factor[adjusted_factor < 0.] = 0.
         # smooth beta
         adjusted_factor *= (1. - self.smoothing)
         adjusted_factor += (self.smoothing / adjusted_factor.shape[1])
         # normalize
-        print(adjusted_factor.shape)
-        adjusted_factor /= adjusted_factor.sum(axis=0)#[:, cp.newaxis]
-        adjusted_factor = tl.transpose(self.factors_) #   n_features x k_topics  
+        adjusted_factor /= adjusted_factor.sum(axis=1)[:, cp.newaxis]
+        adjusted_factor = tl.transpose(self.factors_) # n_docs x k_topics
+
         
         if doc_predict == True:
 
