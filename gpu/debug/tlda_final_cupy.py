@@ -150,16 +150,25 @@ class TLDA():
 
         # adjusted_factor = self.factors_
         # set negative part to 0
+<<<<<<< HEAD
         print(adjusted_factor.shape)
         # minres = cp.min(adjusted_factor)
         # adjusted_factor += abs(minres)
         adjusted_factor[adjusted_factor < 0.] = 0.
+=======
+        adjusted_factor += abs(min(adjusted_factor))
+        #adjusted_factor[adjusted_factor < 0.] = 0.
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
         # smooth beta
         adjusted_factor *= (1. - self.smoothing)
         adjusted_factor += (self.smoothing / adjusted_factor.shape[1])
         # normalize
+<<<<<<< HEAD
         print(adjusted_factor.shape)
         adjusted_factor /= adjusted_factor.sum(axis=0)#[:, cp.newaxis]
+=======
+        adjusted_factor /= adjusted_factor.sum(axis=0)[:, cp.newaxis]
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
         adjusted_factor = tl.transpose(self.factors_) #   n_features x k_topics  
         
         if doc_predict == True:

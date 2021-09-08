@@ -31,7 +31,11 @@ print("Libraries Imported")
 
 k = 5
 alpha_0 = 0.1
+<<<<<<< HEAD
 a, phi, _, _ = get_phi(k, 10, 10, 10 ,alpha_val=alpha_0/k)
+=======
+a, phi, _, _ = get_phi(k, 1000, 10000, 10,alpha_val=alpha_0/k)
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
 
 print('fitting exact...')
 weights_robust, factor_robust, M3 = fit_exact(a, num_tops=k, alpha_0=alpha_0)
@@ -75,7 +79,11 @@ print("Tensor Decompostion Complete")
 ## Verify v^3 = T^3
 # M3 = (alpha_0 + 1)*(alpha_0 + 2)/2*tl.mean(batched_tensor_dot(batched_tensor_dot(a_cent, a_cent),a_cent),axis=0)
 #print(M3)
+<<<<<<< HEAD
 #M3_whiten = (alpha_0 + 1)*(alpha_0 + 2)/2*tl.mean(batched_tensor_dot(batched_tensor_dot(a_whit, a_whit),a_whit),axis=0)
+=======
+# M3_whiten = (alpha_0 + 1)*(alpha_0 + 2)/2*tl.mean(batched_tensor_dot(batched_tensor_dot(a_whit, a_whit),a_whit),axis=0)
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
 # assert_array_almost_equal(tl.tensor(t.factors_), M3_whiten)
 # print("Third Moment Complete")
 
@@ -84,12 +92,17 @@ print("Tensor Decompostion Complete")
 # print('std(a_whit):', cp.std(a_whit))
 # print('std(TLDAseed):', cp.std(TLDAseed))
 # print('std input to generator:', 0.8770580193070291)
+<<<<<<< HEAD
 
 #M3_whitencros3 = cp.std(batched_tensor_dot(batched_tensor_dot(M3_whiten, M3_whiten),M3_whiten))
+=======
+# stdM3_whitencros3 = cp.std(batched_tensor_dot(batched_tensor_dot(M3_whiten, M3_whiten),M3_whiten))
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
 # print('std(M3_whiten(cross)^3):', stdM3_whitencros3)
 # stdTLDAseedcros3 = cp.std(batched_tensor_dot(batched_tensor_dot(TLDAseed, TLDAseed),TLDAseed))
 # print('std(TLDAseed(cross)^3):', stdTLDAseedcros3)
 
+<<<<<<< HEAD
 # Reconstruction  
 #em3 = batched_tensor_dot(batched_tensor_dot(t.factors_, t.factors_),t.factors_)
 
@@ -123,10 +136,32 @@ print('argsort phi:',tophi)
 topfactors = np.argsort(factors[:,0])[-10:]
 print('argsort factors',topfactors)
 # print(factors[:,0][topfactors])
+=======
+print("Initial size of factors: " + str(t.factors_.shape))
+t.factors_ = p.reverse_transform(t.factors_)
+print("Post Unwhitening size of factors: " + str(t.factors_.shape))
+t.predict(a_cent,w_mat=False,doc_predict=False)
+print("Post Processing size of factors: " + str(t.factors_.shape))
+
+factors    = t.factors_
+print(cp.sum(t.factors_,axis=0))
+print(cp.sum(t.factors_,axis=1))
+nphi = np.array(phi)
+print(nphi.shape)
+print('argsort sum(a, axis=0):',np.argsort(np.sum(a, axis=0))[-10:])
+tophi = np.argsort(nphi[0,0])[-10:]
+print('argsort phi:',tophi)
+print(nphi[0,0][tophi])
+
+topfactors = np.argsort(factors[:,0])[-10:]
+print('argsort factors',topfactors)
+print(factors[:,0][topfactors])
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
 
 diff = len(set(tophi.tolist()) - set(topfactors.tolist()))
 print('diff:', diff)
 
+<<<<<<< HEAD
 def get_similarity(run1, run2, top_words, tolerance, n_topics=5):
     similarity = sum([any([len(set(list(run1[i])[-top_words:]) - set(list(run2[j])[-top_words:])) <= tolerance for i in range(n_topics)]) for j in range(n_topics)])
     print(np.array([[len(set(list(run1[i])[-top_words:]) - set(list(run2[j])[-top_words:])) for i in range(n_topics)] for j in range(n_topics)]))
@@ -140,4 +175,9 @@ print(get_similarity(argsorted_factors, argsorted_phi, top_words=10, tolerance=8
 
 
 # assert_array_almost_equal(phi, factors)
+=======
+
+
+assert_array_almost_equal(phi, factors)
+>>>>>>> 1c1bb0acdd0b04b6e2a71964d2a018857f323da9
 
